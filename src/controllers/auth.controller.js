@@ -34,6 +34,7 @@ export const signup = async (req, res) => {
             password: hashedPassword,
             name,
             role,
+            isApproved: role === "student" ? true : false,
             verificationToken,
             verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000 // 24 hours
         })

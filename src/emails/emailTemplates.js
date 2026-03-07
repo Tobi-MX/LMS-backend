@@ -41,7 +41,7 @@ export const WELCOME_EMAIL_TEMPLATE = `
     <h1 style="color: white; margin: 0;">Welcome To AI-LMS</h1>
   </div>
   <div style="background-color: #f9f9f9; padding: 20px; border-radius: 0 0 5px 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-    <p>Hello {name},</p>
+    <p>Hello {name}, You have been verified.</p>
 
     <p>Welcome to our Learning Platform! 🎓</p>
 
