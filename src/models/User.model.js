@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    isApporved: {
+    isApproved: {
         type: Boolean,
         default: false
     },

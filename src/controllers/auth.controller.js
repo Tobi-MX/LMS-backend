@@ -34,7 +34,7 @@ export const signup = async (req, res) => {
             password: hashedPassword,
             name,
             role,
-            isApproved: role === "student" ? true : false,
+            isApproved: role === "instructor" ? false : true,
             verificationToken,
             verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000 // 24 hours
         })
@@ -63,16 +63,18 @@ export const verifyEmail = async (req, res) => {
     try {
         const user = await User.findOne({
             verificationToken: token,
-            verificationTokenExpiresAt: {$gt: Date.now()}
+            verificationTokenExpiresAt: { $gt: Date.now() }
         })
 
         if (!user) {
-            return res.status(400).json({success: false, message: "Invalid or expired verification token"})
+            return res.status(400).json({ success: false, message: "Invalid or expired verification token" })
         }
 
         user.isVerified = true
         user.verificationToken = undefined
         user.verificationTokenExpiresAt = undefined
+        await user.save()
+
 
         await sendWelcomeEmail(user.email, user.name)
         res.status(201).json({
@@ -87,5 +89,39 @@ export const verifyEmail = async (req, res) => {
     } catch (error) {
         console.log("error in verify-email", error)
         res.status(500).json({ success: false, message: "Server error" })
+    }
+}
+
+export const login = async (req, res) => {
+    const { email, password } = req.body
+    try {
+        const user = await User.findOne({ email })
+        if (!user) {
+            return res.status(400).json({ success: false, message: "Invalid credentials" })
+        }
+        const isPasswordValid = await bcryptjs.compare(password, user.password)
+        if (!isPasswordValid) {
+            return res.status(400).json({ success: false, message: "Invalid credentials" })
+        }
+        if (user.role === "instructor" && (!user.isVerified || !user.isApproved)) {
+            return res.status(403).json({ message: "Verify email and wait for approval" })
+        }
+
+        generateTokenAndSetCookie(res, user._id)
+
+        user.lastLogin = new Date()
+        await user.save()
+
+        res.status(200).json({
+            success: true,
+            message: "Logged in successfully",
+            user: {
+                ...user._doc,
+                password: undefined,
+            },
+        })
+    } catch (error) {
+        console.log("Error in login ", error)
+        res.status(400).json({ success: false, message: error.message });
     }
 }
