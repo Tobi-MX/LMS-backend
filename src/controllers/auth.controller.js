@@ -3,7 +3,7 @@ import bcryptjs from 'bcryptjs'
 
 import { generateVerificationToken } from "../utils/generateVerificationCode.js"
 import { generateTokenAndSetCookie } from "../utils/generateVerificationToken.js"
-import { sendVerificationEmail } from "../emails/emailHandler.js"
+import { sendVerificationEmail, sendWelcomeEmail } from "../emails/emailHandler.js"
 
 export const signup = async (req, res) => {
     const { name, email, password, role } = req.body
@@ -54,5 +54,37 @@ export const signup = async (req, res) => {
 
     } catch (error) {
         res.status(400).json({ success: false, error: error.message })
+    }
+}
+
+export const verifyEmail = async (req, res) => {
+    const { token } = req.body
+    try {
+        const user = await User.findOne({
+            verificationToken: token,
+            verificationTokenExpiresAt: {$gt: Date.now()}
+        })
+
+        if (!user) {
+            return res.status(400).json({success: false, message: "Invalid or expired verification token"})
+        }
+
+        user.isVerified = true
+        user.verificationToken = undefined
+        user.verificationTokenExpiresAt = undefined
+
+        await sendWelcomeEmail(user.email, user.name)
+        res.status(201).json({
+            success: true,
+            message: "Email successfully verified",
+            user: {
+                ...user._doc,
+                password: undefined
+            },
+        })
+
+    } catch (error) {
+        console.log("error in verify-email", error)
+        res.status(500).json({ success: false, message: "Server error" })
     }
 }
