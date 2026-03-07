@@ -1,9 +1,11 @@
 import { User } from "../models/User.model.js"
 import bcryptjs from 'bcryptjs'
+import crypto from "crypto"
+import ENV from "../config/env.js"
 
 import { generateVerificationToken } from "../utils/generateVerificationCode.js"
 import { generateTokenAndSetCookie } from "../utils/generateVerificationToken.js"
-import { sendVerificationEmail, sendWelcomeEmail } from "../emails/emailHandler.js"
+import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail } from "../emails/emailHandler.js"
 
 export const signup = async (req, res) => {
     const { name, email, password, role } = req.body
@@ -129,4 +131,39 @@ export const login = async (req, res) => {
 export const logout = async (_, res) => {
     res.clearCookie("token")
     res.status(200).json({ success: true, message: "Logged out successfully" })
+}
+
+export const forgotPassword = async (req, res) => {
+    const { email } = req.body
+    try {
+        const user = await User.findOne({ email })
+        if (!user) {
+            return res.status(400).json({ success: false, message: "User doesn't exist" })
+        }
+        if (!user.isVerified) {
+            return res.status(400).json({ success: false, message: "User not verified" })
+        }
+
+        const resetToken = crypto.randomBytes(20).toString("hex")
+        const resetTokenExpiresAt = Date.now() + 1000 * 60 * 60 * 1 // 1 hour
+
+        user.resetPasswordToken = resetToken
+        user.resetPasswordExpiresAt = resetTokenExpiresAt
+        await user.save()
+
+        await sendPasswordResetEmail(email, `${ENV.CLIENT_URL}/reset-password/${resetToken}`)
+
+        res.status(201).json({
+            success: true,
+            message: "Password reset request sent Successfully",
+            user: {
+                ...user._doc,
+                password: undefined,
+            }
+        })
+
+    } catch (error) {
+        console.log("Error in forgotPassword ", error)
+        res.status(400).json({ success: false, message: error.message });
+    }
 }

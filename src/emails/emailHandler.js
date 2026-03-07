@@ -1,5 +1,5 @@
 import { resendClient, sender } from "../lib/resend.js";
-import { VERIFICATION_EMAIL_TEMPLATE, WELCOME_EMAIL_TEMPLATE } from "./emailTemplates.js";
+import { VERIFICATION_EMAIL_TEMPLATE, WELCOME_EMAIL_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE } from "./emailTemplates.js";
 
 export const sendVerificationEmail = async (email, verificationToken) => {
     const { data, error } = await resendClient.emails.send({
@@ -26,9 +26,25 @@ export const sendWelcomeEmail = async (email, name) => {
     })
 
     if (error) {
-        console.error("Error sending verification email:", error)
-        throw new Error("Failed to send verification email")
+        console.error("Error sending welcome email:", error)
+        throw new Error("Failed to send welcome email")
     }
 
     console.log("Welcome email sent successfully", data)
+}
+
+export const sendPasswordResetEmail = async (email, resetURL) => {
+    const { data, error } = await resendClient.emails.send({
+        from: `${sender.name} <${sender.email}>`,
+        to: email,
+        subject: "Password Reset",
+        html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetURL)
+    })
+
+    if (error) {
+        console.error("Error sending reset password email:", error)
+        throw new Error("Failed to send reset password email")
+    }
+
+    console.log("Password reset request sent successfully", data)
 }
