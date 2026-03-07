@@ -5,7 +5,7 @@ import ENV from "../config/env.js"
 
 import { generateVerificationToken } from "../utils/generateVerificationCode.js"
 import { generateTokenAndSetCookie } from "../utils/generateVerificationToken.js"
-import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail } from "../emails/emailHandler.js"
+import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendResetSuccessEmail } from "../emails/emailHandler.js"
 
 export const signup = async (req, res) => {
     const { name, email, password, role } = req.body
@@ -143,6 +143,9 @@ export const forgotPassword = async (req, res) => {
         if (!user.isVerified) {
             return res.status(400).json({ success: false, message: "User not verified" })
         }
+        if (user.role === "instructor" && (!user.isVerified || !user.isApproved)) {
+            return res.status(403).json({ message: "Verify email and wait for approval" })
+        }
 
         const resetToken = crypto.randomBytes(20).toString("hex")
         const resetTokenExpiresAt = Date.now() + 1000 * 60 * 60 * 1 // 1 hour
@@ -165,5 +168,42 @@ export const forgotPassword = async (req, res) => {
     } catch (error) {
         console.log("Error in forgotPassword ", error)
         res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+export const resetPassword = async (req, res) => {
+    const { token } = req.params
+    const { password } = req.body
+    try {
+        const user = await User.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpiresAt: { $gt: Date.now() }
+        })
+
+        if (!user) {
+            return res.status(400).json({ success: false, message: "invalid or expired reset token" })
+        }
+
+        const hashedPassword = await bcryptjs.hash(password, 10)
+
+        user.password = hashedPassword
+        user.resetPasswordToken = undefined
+        user.resetPasswordExpiresAt = undefined
+
+        await user.save()
+        await sendResetSuccessEmail(user.email)
+
+        res.status(201).json({
+            success: true,
+            message: "Password changed successfully",
+            user: {
+                ...user._doc,
+                password: undefined,
+            }
+        })
+
+    } catch (error) {
+        console.log("Error in resetPassword ", error)
+        res.status(400).json({ success: false, message: error.message })
     }
 }
