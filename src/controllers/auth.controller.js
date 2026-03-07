@@ -3,6 +3,7 @@ import bcryptjs from 'bcryptjs'
 
 import { generateVerificationToken } from "../utils/generateVerificationCode.js"
 import { generateTokenAndSetCookie } from "../utils/generateVerificationToken.js"
+import { sendVerificationEmail } from "../emails/emailHandler.js"
 
 export const signup = async (req, res) => {
     const { name, email, password, role } = req.body
@@ -34,14 +35,24 @@ export const signup = async (req, res) => {
             name,
             role,
             verificationToken,
-            verificationTokenExpiresAt: Date.now() + 48 * 60 * 60 * 1000 // 48 hours
+            verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000 // 24 hours
         })
         await user.save()
 
         generateTokenAndSetCookie(res, user._id)
 
+        await sendVerificationEmail(user.email, verificationToken)
+
+        res.status(201).json({
+            success: true,
+            message: "User created Successfully",
+            user: {
+                ...user._doc,
+                password: undefined,
+            }
+        })
 
     } catch (error) {
-
+        res.status(400).json({ success: false, error: error.message })
     }
 }

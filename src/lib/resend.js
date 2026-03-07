@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import ENV from './env.js'
+import ENV from '../config/env.js';
 
 if (!ENV.RESEND_API_KEY) {
     throw new Error("Resend API key is unavailable")
