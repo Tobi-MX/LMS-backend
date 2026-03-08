@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser'
+import cors from 'cors'
 
 import { connectDB } from './config/db.js';
 import authRoutes from './routes/auth.route.js'
@@ -12,6 +13,7 @@ const app = express();
 const PORT = ENV.PORT || 3000;
 
 app.use(express.json()) // allows to parse incoming request body (don't FORGET again!)
+app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }))
 app.use(cookieParser()) // allows to parse incoming cookies
 
 app.use('/api/auth', authRoutes)
