@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema({
         required: true,
         minlength: 6
     },
+    bio: {
+        type: String,
+        default: ""
+    },
     role: {
         type: String,
         enum: ["student", "instructor", "admin"],
