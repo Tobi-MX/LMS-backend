@@ -5,6 +5,10 @@ import { authenticate } from "../middleware/authenticate.middleware.js"
 
 const router = express.Router()
 
+router.get("/check", authenticate, (req, res) => {
+    res.status(200).json(req.user)
+}) // general check to know if user is authenticated
+
 router.post("/signup", signup)
 router.post("/login", login)
 router.post("/logout", logout)
