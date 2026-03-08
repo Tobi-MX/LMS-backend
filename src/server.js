@@ -5,6 +5,7 @@ import cors from 'cors'
 
 import { connectDB } from './config/db.js';
 import authRoutes from './routes/auth.route.js'
+import courseRoutes from './routes/course.route.js'
 import ENV from './config/env.js';
 
 dotenv.config()
@@ -17,6 +18,7 @@ app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }))
 app.use(cookieParser()) // allows to parse incoming cookies
 
 app.use('/api/auth', authRoutes)
+app.use('/api/courses', courseRoutes)
 
 connectDB().then(result => {
   app.listen(PORT, () => {
