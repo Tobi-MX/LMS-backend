@@ -13,7 +13,9 @@ dotenv.config()
 const app = express();
 const PORT = ENV.PORT || 3000;
 
+
 app.use(express.json()) // allows to parse incoming request body (don't FORGET again!)
+app.use(express.urlencoded({ extended: true }));
 app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }))
 app.use(cookieParser()) // allows to parse incoming cookies
 
