@@ -36,6 +36,7 @@ export const updateCourse = async (req, res) => {
             course
         })
     } catch (error) {
-
+        console.log("error in updateCourse", error)
+        res.status(400).json({ success: false, error: error.message })
     }
 }
