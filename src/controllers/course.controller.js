@@ -1,4 +1,4 @@
-import { createCourseService, updateCourseService } from "../services/course.service.js"
+import { createCourseService, updateCourseService, deleteCourseService } from "../services/course.service.js"
 
 export const createCourse = async (req, res) => {
     const { title } = req.body
@@ -37,6 +37,22 @@ export const updateCourse = async (req, res) => {
         })
     } catch (error) {
         console.log("error in updateCourse", error)
+        res.status(400).json({ success: false, error: error.message })
+    }
+}
+
+export const deleteCourse = async (req, res) => {
+    try {
+        await deleteCourseService(
+            req.params.id,
+            req.user
+        )
+        res.status(200).json({
+            success: true,
+            message: "Course deleted Successfully",
+        })
+    } catch (error) {
+        console.log("error in deleteCourse", error)
         res.status(400).json({ success: false, error: error.message })
     }
 }

@@ -1,6 +1,6 @@
 import express from "express"
 
-import { createCourse, updateCourse } from "../controllers/course.controller.js"
+import { createCourse, updateCourse , deleteCourse} from "../controllers/course.controller.js"
 import { authenticate } from "../middleware/authenticate.middleware.js"
 import { authorize } from "../middleware/authorize.middleware.js"
 import { upload } from "../lib/multer.js"
@@ -26,6 +26,10 @@ router.patch("/:id",
     authorize("instructor", "admin"), 
     upload.single("thumbnail"), 
     updateCourse
+)
+router.delete("/:id",
+    authorize("instructor", "admin"),
+    deleteCourse
 )
 
 export default router
