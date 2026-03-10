@@ -4,11 +4,8 @@ import cloudinary from "../lib/cloudinary.js"
 export const createCourseService = async (req, userId) => {
     let thumbnailUrl;
 
-    if (req.file?.path) {
+    if (req.file) {
         const uploadResponse = await cloudinary.uploader.upload(req.file.path);
-        thumbnailUrl = uploadResponse.secure_url;
-    } else if (req.body.thumbnail) {
-        const uploadResponse = await cloudinary.uploader.upload(req.body.thumbnail);
         thumbnailUrl = uploadResponse.secure_url;
     }
 
@@ -21,4 +18,8 @@ export const createCourseService = async (req, userId) => {
 
     await course.save()
     return course
+}
+
+export const updateCourseService = async (courseId, data, file, user) => {
+    
 }
