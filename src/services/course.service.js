@@ -11,7 +11,10 @@ export const createCourseService = async (req, userId) => {
     const course = new Course({
         ...req.body,
         instructor: userId,
-        thumbnail: thumbnailUrl,
+        thumbnail: {
+            url: thumbnailUrl.secure_url,
+            public_id: thumbnailUrl.public_id
+        },
         status: "draft"
     })
 
@@ -33,8 +36,15 @@ export const updateCourseService = async (courseId, data, file, user) => {
     }
 
     if (file) {
-        const imageUrl = await uploadImage(file);
-        course.thumbnail = imageUrl;
+        if (course.thumbnail?.public_id) {
+            await deleteImage(course.thumbnail.public_id)
+        }
+
+        const thumbnailUrl = await uploadImage(file);
+        course.thumbnail = {
+            url: thumbnailUrl.secure_url,
+            public_id: thumbnailUrl.public_id
+        };
     }
 
     const allowedFields = [
@@ -66,8 +76,8 @@ export const deleteCourseService = async (courseId, user) => {
     ) {
         return res.status(400).json({ message: "Not authorized" })
     }
-    if (course.thumbnail) {
-        await deleteImage(course.thumbnail);
+    if (course.thumbnail?.public_id) {
+        await deleteImage(course.thumbnail.public_id)
     }
 
     //await Module.deleteMany({ course: courseId });

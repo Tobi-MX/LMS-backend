@@ -14,8 +14,8 @@ const courseSchema = new mongoose.Schema({
         ref: "User"
     },
     thumbnail: {
-        type: String,
-        default: ""
+        url: String,
+        public_id: String
     },
     status: {
         type: String,
