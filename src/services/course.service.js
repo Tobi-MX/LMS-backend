@@ -86,3 +86,7 @@ export const deleteCourseService = async (courseId, user) => {
 
     await course.deleteOne();
 };
+
+export const getCourseService = async () => {
+    
+}
