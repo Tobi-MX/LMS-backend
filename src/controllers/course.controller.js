@@ -47,7 +47,7 @@ export const deleteCourse = async (req, res) => {
             req.params.id,
             req.user
         )
-        res.status(200).json({
+        res.status(204).json({
             success: true,
             message: "Course deleted Successfully",
         })
@@ -59,8 +59,14 @@ export const deleteCourse = async (req, res) => {
 
 export const getCourses = async (req, res) => {
     try {
-        const courses = await getCoursesService()
+        const data = await getCoursesService(req.query)
+
+        res.status(200).json({
+            success: true,
+            data
+        });
     } catch (error) {
-        
+        console.log("error in getCourses", error)
+        res.status(500).json({ success: false, error: error.message })
     }
 }

@@ -87,6 +87,25 @@ export const deleteCourseService = async (courseId, user) => {
     await course.deleteOne();
 };
 
-export const getCoursesService = async () => {
+export const getCoursesService = async (query) => {
+    const page = Number(query.page) || 1
+    const limit = Number(query.limit) || 10
 
+    const skip = (page - 1) * limit
+
+    const courses = await Course.find()
+        .populate("instructor", "name email")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+
+    const total = await Course.countDocuments()
+
+    return {
+        courses,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+        totalCourses: total
+    }
 }

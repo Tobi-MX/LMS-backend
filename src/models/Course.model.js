@@ -22,6 +22,6 @@ const courseSchema = new mongoose.Schema({
         enum: ["draft", "published"],
         default: "draft"
     }
-})
+}, { timestamps: true })
 
 export const Course = mongoose.model("Course", courseSchema)
