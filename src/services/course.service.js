@@ -26,13 +26,13 @@ export const updateCourseService = async (courseId, data, file, user) => {
     const course = await Course.findById(courseId);
 
     if (!course) {
-        return res.status(400).json({ message: "Course not found" })
+        return res.status(404).json({ message: "Course not found" })
     }
     if (
         course.instructor.toString() !== user._id.toString() &&
         user.role !== "admin"
     ) {
-        return res.status(400).json({ message: "Not authorized" })
+        return res.status(403).json({ message: "Not authorized" })
     }
 
     if (file) {
@@ -68,13 +68,13 @@ export const deleteCourseService = async (courseId, user) => {
     const course = await Course.findById(courseId)
 
     if (!course) {
-        return res.status(400).json({ message: "Course not found" })
+        return res.status(404).json({ message: "Course not found" })
     }
     if (
         course.instructor.toString() !== user._id.toString() &&
         user.role !== "admin"
     ) {
-        return res.status(400).json({ message: "Not authorized" })
+        return res.status(403).json({ message: "Not authorized" })
     }
     if (course.thumbnail?.public_id) {
         await deleteImage(course.thumbnail.public_id)
@@ -87,6 +87,6 @@ export const deleteCourseService = async (courseId, user) => {
     await course.deleteOne();
 };
 
-export const getCourseService = async () => {
-    
+export const getCoursesService = async () => {
+
 }

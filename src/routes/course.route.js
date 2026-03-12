@@ -10,25 +10,22 @@ const router = express.Router()
 
 /* ---------- PUBLIC ROUTES ---------- */
 
-router.get("/", getCourses)
+router.get("/", getCourses) // will add pagination to this route.
 //router.get("/:id", getCourse)
 
 /* ---------- AUTH REQUIRED ---------- */
 
-router.use(authenticate);
+router.use(authenticate, authorize("instructor", "admin"));
 
-router.post("/", 
-    authorize("instructor", "admin"), 
+router.post("/",  
     upload.single("thumbnail"), 
     createCourse
 )
 router.patch("/:id", 
-    authorize("instructor", "admin"), 
     upload.single("thumbnail"), 
     updateCourse
 )
 router.delete("/:id",
-    authorize("instructor", "admin"),
     deleteCourse
 )
 

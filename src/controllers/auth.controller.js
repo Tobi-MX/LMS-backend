@@ -26,7 +26,7 @@ export const signup = async (req, res) => {
 
         const userAlreadyExists = await User.findOne({ email })
         if (userAlreadyExists) {
-            res.status(400).json({ success: false, error: "User already exists" })
+            res.status(409).json({ success: false, error: "User already exists" })
         }
 
         const hashedPassword = await bcryptjs.hash(password, 10)
@@ -56,7 +56,7 @@ export const signup = async (req, res) => {
         })
 
     } catch (error) {
-        res.status(400).json({ success: false, error: error.message })
+        res.status(500).json({ success: false, error: error.message })
     }
 }
 
@@ -69,7 +69,7 @@ export const verifyEmail = async (req, res) => {
         })
 
         if (!user) {
-            return res.status(400).json({ success: false, message: "Invalid or expired verification token" })
+            return res.status(404).json({ success: false, message: "Invalid or expired verification token" })
         }
 
         user.isVerified = true
@@ -99,11 +99,11 @@ export const login = async (req, res) => {
     try {
         const user = await User.findOne({ email })
         if (!user) {
-            return res.status(400).json({ success: false, message: "Invalid credentials" })
+            return res.status(401).json({ success: false, message: "Invalid credentials" })
         }
         const isPasswordValid = await bcryptjs.compare(password, user.password)
         if (!isPasswordValid) {
-            return res.status(400).json({ success: false, message: "Invalid credentials" })
+            return res.status(401).json({ success: false, message: "Invalid credentials" })
         }
         if (user.role === "instructor" && (!user.isVerified || !user.isApproved)) {
             return res.status(403).json({ message: "Verify email and wait for approval" })
@@ -124,7 +124,7 @@ export const login = async (req, res) => {
         })
     } catch (error) {
         console.log("Error in login ", error)
-        res.status(400).json({ success: false, message: error.message });
+        res.status(500).json({ success: false, message: error.message });
     }
 }
 
@@ -138,10 +138,10 @@ export const forgotPassword = async (req, res) => {
     try {
         const user = await User.findOne({ email })
         if (!user) {
-            return res.status(400).json({ success: false, message: "User doesn't exist" })
+            return res.status(404).json({ success: false, message: "User doesn't exist" })
         }
         if (!user.isVerified) {
-            return res.status(400).json({ success: false, message: "User not verified" })
+            return res.status(401).json({ success: false, message: "User not verified" })
         }
         if (user.role === "instructor" && (!user.isVerified || !user.isApproved)) {
             return res.status(403).json({ message: "Verify email and wait for approval" })
@@ -167,7 +167,7 @@ export const forgotPassword = async (req, res) => {
 
     } catch (error) {
         console.log("Error in forgotPassword ", error)
-        res.status(400).json({ success: false, message: error.message });
+        res.status(500).json({ success: false, message: error.message });
     }
 }
 
@@ -181,7 +181,7 @@ export const resetPassword = async (req, res) => {
         })
 
         if (!user) {
-            return res.status(400).json({ success: false, message: "invalid or expired reset token" })
+            return res.status(404).json({ success: false, message: "invalid or expired reset token" })
         }
 
         const hashedPassword = await bcryptjs.hash(password, 10)
@@ -204,6 +204,6 @@ export const resetPassword = async (req, res) => {
 
     } catch (error) {
         console.log("Error in resetPassword ", error)
-        res.status(400).json({ success: false, message: error.message })
+        res.status(500).json({ success: false, message: error.message })
     }
 }
