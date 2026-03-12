@@ -1,6 +1,8 @@
 import { Course } from "../models/Course.model.js"
 import { uploadImage, deleteImage } from "../utils/cloudinary.js";
-import { NotFoundError, ForbiddenError } from "../error/AppError.js";
+import { NotFoundError, ForbiddenError, BadRequestError } from "../error/AppError.js";
+
+import mongoose from "mongoose";
 
 export const createCourseService = async (req, userId) => {
     let thumbnailUrl;
@@ -24,6 +26,9 @@ export const createCourseService = async (req, userId) => {
 }
 
 export const updateCourseService = async (courseId, data, file, user) => {
+    if (!mongoose.Types.ObjectId.isValid(courseId)) {
+        throw new BadRequestError("Invalid course id");
+    }
     const course = await Course.findById(courseId);
 
     if (!course) {
@@ -66,6 +71,9 @@ export const updateCourseService = async (courseId, data, file, user) => {
 }
 
 export const deleteCourseService = async (courseId, user) => {
+    if (!mongoose.Types.ObjectId.isValid(courseId)) {
+        throw new BadRequestError("Invalid course id");
+    }
     const course = await Course.findById(courseId)
 
     if (!course) {
@@ -112,6 +120,9 @@ export const getCoursesService = async (query) => {
 }
 
 export const getCourseService = async (courseId) => {
+    if (!mongoose.Types.ObjectId.isValid(courseId)) {
+        throw new BadRequestError("Invalid course id");
+    }
     const course = await Course.findById(courseId)
         .populate("instructor", "name email")
 
@@ -121,3 +132,27 @@ export const getCourseService = async (courseId) => {
 
     return course
 }
+
+export const getMyCoursesService = async (instructorId) => {
+    if (!mongoose.Types.ObjectId.isValid(instructorId)) {
+        throw new BadRequestError("Invalid course id");
+    }
+    const courses = await Course.find({
+        instructor: instructorId
+    }).sort({ createdAt: -1 })
+
+    return courses;
+};
+
+export const getInstructorCoursesService = async (instructorId) => {
+    if (!mongoose.Types.ObjectId.isValid(instructorId)) {
+        throw new BadRequestError("Invalid course id");
+    }
+    const courses = await Course.find({
+        instructor: instructorId
+    })
+        .populate("instructor", "name")
+        .sort({ createdAt: -1 });
+
+    return courses;
+};

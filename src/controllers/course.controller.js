@@ -1,4 +1,4 @@
-import { createCourseService, updateCourseService, deleteCourseService, getCoursesService, getCourseService } from "../services/course.service.js"
+import { createCourseService, updateCourseService, deleteCourseService, getCoursesService, getCourseService, getMyCoursesService, getInstructorCoursesService,  } from "../services/course.service.js"
 
 export const createCourse = async (req, res) => {
     const { title } = req.body
@@ -84,3 +84,31 @@ export const getCourse = async (req, res, next) => {
         next(error)
     }
 }
+
+export const getMyCourses = async (req, res, next) => {
+  try {
+    const courses = await getMyCoursesService(req.user._id);
+
+    res.status(200).json({
+      success: true,
+      data: courses
+    });
+
+  } catch (error) {
+    next(error)
+  }
+};
+
+export const getInstructorCourses = async (req, res, next) => {
+  try {
+    const courses = await getInstructorCoursesService(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      data: courses
+    });
+
+  } catch (error) {
+    next(error)
+  }
+};
