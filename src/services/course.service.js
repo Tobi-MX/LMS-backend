@@ -85,7 +85,7 @@ export const deleteCourseService = async (courseId, user) => {
     //await Enrollment.deleteMany({ course: courseId }); will add all that needs to later
 
     await course.deleteOne();
-};
+}
 
 export const getCoursesService = async (query) => {
     const page = Number(query.page) || 1
@@ -108,4 +108,15 @@ export const getCoursesService = async (query) => {
         totalPages: Math.ceil(total / limit),
         totalCourses: total
     }
+}
+
+export const getCourseService = async (courseId) => {
+    const course = await Course.findById(courseId)
+        .populate("instructor", "name email")
+
+    if (!course) {
+        return res.status(404).json({ message: "Course not found" })
+    }
+
+    return course
 }
