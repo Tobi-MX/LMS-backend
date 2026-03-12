@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 
 import { connectDB } from './config/db.js';
+import { errorHandler } from './middleware/error.js';
 import authRoutes from './routes/auth.route.js'
 import courseRoutes from './routes/course.route.js'
 import ENV from './config/env.js';
@@ -21,6 +22,8 @@ app.use(cookieParser()) // allows to parse incoming cookies
 
 app.use('/api/auth', authRoutes)
 app.use('/api/courses', courseRoutes)
+
+app.use(errorHandler)
 
 connectDB().then(result => {
   app.listen(PORT, () => {

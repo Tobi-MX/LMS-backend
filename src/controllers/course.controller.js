@@ -18,7 +18,7 @@ export const createCourse = async (req, res) => {
 
     } catch (error) {
         console.log("error in createCourse", error)
-        res.status(500).json({ success: false, error: error.message })
+        next(error)
     }
 }
 
@@ -37,11 +37,11 @@ export const updateCourse = async (req, res) => {
         })
     } catch (error) {
         console.log("error in updateCourse", error)
-        res.status(500).json({ success: false, error: error.message })
+        next(error)
     }
 }
 
-export const deleteCourse = async (req, res) => {
+export const deleteCourse = async (req, res, next) => {
     try {
         await deleteCourseService(
             req.params.id,
@@ -53,7 +53,7 @@ export const deleteCourse = async (req, res) => {
         })
     } catch (error) {
         console.log("error in deleteCourse", error)
-        res.status(500).json({ success: false, error: error.message })
+        next(error)
     }
 }
 
@@ -67,11 +67,11 @@ export const getCourses = async (req, res) => {
         })
     } catch (error) {
         console.log("error in getCourses", error)
-        res.status(500).json({ success: false, error: error.message })
+        next(error)
     }
 }
 
-export const getCourse = async (req, res) => {
+export const getCourse = async (req, res, next) => {
     try {
         const course = await getCourseService(req.params.id)
 
@@ -81,6 +81,6 @@ export const getCourse = async (req, res) => {
         })
     } catch (error) {
         console.log("error in getCourse", error)
-        res.status(500).json({ success: false, error: error.message })
+        next(error)
     }
 }

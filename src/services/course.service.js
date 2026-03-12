@@ -1,5 +1,6 @@
 import { Course } from "../models/Course.model.js"
 import { uploadImage, deleteImage } from "../utils/cloudinary.js";
+import { NotFoundError, ForbiddenError } from "../error/AppError.js";
 
 export const createCourseService = async (req, userId) => {
     let thumbnailUrl;
@@ -26,13 +27,13 @@ export const updateCourseService = async (courseId, data, file, user) => {
     const course = await Course.findById(courseId);
 
     if (!course) {
-        return res.status(404).json({ message: "Course not found" })
+        throw new NotFoundError("Course not found")
     }
     if (
         course.instructor.toString() !== user._id.toString() &&
         user.role !== "admin"
     ) {
-        return res.status(403).json({ message: "Not authorized" })
+        throw new ForbiddenError("Not authorized")
     }
 
     if (file) {
@@ -68,13 +69,13 @@ export const deleteCourseService = async (courseId, user) => {
     const course = await Course.findById(courseId)
 
     if (!course) {
-        return res.status(404).json({ message: "Course not found" })
+        throw new NotFoundError("Course not found")
     }
     if (
         course.instructor.toString() !== user._id.toString() &&
         user.role !== "admin"
     ) {
-        return res.status(403).json({ message: "Not authorized" })
+        throw new ForbiddenError("Course not found")
     }
     if (course.thumbnail?.public_id) {
         await deleteImage(course.thumbnail.public_id)
@@ -115,7 +116,7 @@ export const getCourseService = async (courseId) => {
         .populate("instructor", "name email")
 
     if (!course) {
-        return res.status(404).json({ message: "Course not found" })
+        throw new NotFoundError("Course not found")
     }
 
     return course
