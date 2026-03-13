@@ -7,6 +7,7 @@ import { connectDB } from './config/db.js';
 import { errorHandler } from './middleware/error.js';
 import authRoutes from './routes/auth.route.js'
 import courseRoutes from './routes/course.route.js'
+import usersRoutes from './routes/auth.route.js'
 import ENV from './config/env.js';
 
 dotenv.config()
@@ -22,6 +23,7 @@ app.use(cookieParser()) // allows to parse incoming cookies
 
 app.use('/api/auth', authRoutes)
 app.use('/api/courses', courseRoutes)
+app.use('/api/users', usersRoutes)
 
 app.use(errorHandler)
 

@@ -47,7 +47,7 @@ export const deleteCourse = async (req, res, next) => {
             req.params.id,
             req.user
         )
-        res.status(204).json({
+        res.status(200).json({
             success: true,
             message: "Course deleted Successfully",
         })
