@@ -1,6 +1,6 @@
 import { createCourseService, updateCourseService, deleteCourseService, getCoursesService, getCourseService, getMyCoursesService, getInstructorCoursesService,  } from "../services/course.service.js"
 
-export const createCourse = async (req, res) => {
+export const createCourse = async (req, res, next) => {
     const { title } = req.body
     try {
         if (!title) {
@@ -22,7 +22,7 @@ export const createCourse = async (req, res) => {
     }
 }
 
-export const updateCourse = async (req, res) => {
+export const updateCourse = async (req, res, next) => {
     try {
         const course = await updateCourseService(
             req.params.id,
@@ -57,7 +57,7 @@ export const deleteCourse = async (req, res, next) => {
     }
 }
 
-export const getCourses = async (req, res) => {
+export const getCourses = async (req, res, next) => {
     try {
         const data = await getCoursesService(req.query)
 
