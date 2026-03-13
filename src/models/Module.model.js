@@ -13,8 +13,8 @@ const moduleSchema = new mongoose.Schema({
     description: String,
     order: {
         type: Number,
-        default: 0
+        required: true
     }
-})
+}, { timestamps: true })
 
 export const Module = mongoose.model("Module", moduleSchema)

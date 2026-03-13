@@ -1,11 +1,20 @@
 import express from "express"
 
 import { createCourse, updateCourse, deleteCourse, getCourses, getCourse, getMyCourses, getInstructorCourses } from "../controllers/course.controller.js"
+import { createModule } from "../controllers/module.controller.js"
 import { authenticate } from "../middleware/authenticate.middleware.js"
 import { authorize } from "../middleware/authorize.middleware.js"
 import { upload } from "../lib/multer.js"
 
 const router = express.Router()
+
+
+// MODULE CONTROLLERS
+router.post("/:id/modules", 
+    authenticate, 
+    authorize("instructor", "admin"), 
+    createModule
+)
 
 router.get("/me", authenticate, authorize("instructor"), getMyCourses)
 //gets logged in instructors courses (Like for instructor dashboard)
