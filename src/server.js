@@ -8,6 +8,7 @@ import { errorHandler } from './middleware/error.js';
 import authRoutes from './routes/auth.route.js'
 import courseRoutes from './routes/course.route.js'
 import usersRoutes from './routes/users.route.js'
+import healthRoute from './routes/health.route.js'
 import ENV from './config/env.js';
 
 dotenv.config()
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }))
 app.use(cookieParser()) // allows to parse incoming cookies
 
+app.use('/api', healthRoute)
 app.use('/api/auth', authRoutes)
 app.use('/api/courses', courseRoutes)
 app.use('/api/users', usersRoutes)
