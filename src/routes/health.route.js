@@ -1,13 +1,13 @@
-import express from "express";
+import express from "express"
 
-const router = express.Router();
+const router = express.Router()
 
 router.get("/health", (_, res) => {
   res.status(200).json({
     status: "ok",
     uptime: process.uptime(),
     timestamp: new Date().toISOString()
-  });
-});
+  })
+})
 
 export default router;

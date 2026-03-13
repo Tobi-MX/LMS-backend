@@ -1,12 +1,20 @@
 import mongoose from 'mongoose';
 
 const moduleSchema = new mongoose.Schema({
-  title: String,
-  course: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Course"
-  },
-  order: Number
+    title: {
+        type: String,
+        required: true
+    },
+    course: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course",
+        required: true
+    },
+    description: String,
+    order: {
+        type: Number,
+        default: 0
+    }
 })
 
-export const Course = mongoose.model("Course", courseSchema)
+export const Module = mongoose.model("Module", moduleSchema)
