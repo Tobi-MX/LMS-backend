@@ -7,7 +7,7 @@ import { connectDB } from './config/db.js';
 import { errorHandler } from './middleware/error.js';
 import authRoutes from './routes/auth.route.js'
 import courseRoutes from './routes/course.route.js'
-import usersRoutes from './routes/auth.route.js'
+import usersRoutes from './routes/users.route.js'
 import ENV from './config/env.js';
 
 dotenv.config()

@@ -50,7 +50,7 @@ export const updateCourseService = async (courseId, data, file, user) => {
         course.thumbnail = {
             url: thumbnailUrl.secure_url,
             public_id: thumbnailUrl.public_id
-        };
+        }
     }
 
     const allowedFields = [
