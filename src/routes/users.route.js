@@ -9,6 +9,8 @@ const router = express.Router()
 router.use(authenticate)
 
 router.patch("/me", upload.single("profilePic"), updateMyProfile)
-//router.get("/me", getMyProfile)
+router.get("/me", (req, res) => {
+    res.status(200).json(req.user)
+})
 
 export default router
