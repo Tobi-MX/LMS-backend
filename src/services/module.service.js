@@ -47,3 +47,15 @@ export const getCourseModulesService = async (courseId) => {
 
     return modules
 }
+
+export const getModuleService = async (moduleId) => {
+    if (!mongoose.Types.ObjectId.isValid(moduleId)) {
+        throw new BadRequestError("Invalid course id");
+    }
+    const foundModule = await Module.findById(moduleId)
+
+    if (!foundModule) {
+        throw new NotFoundError("Module not found")
+    }
+    return foundModule
+}
