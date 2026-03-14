@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Module } from "../models/Module.model.js";
 import { Course } from "../models/Course.model.js";
 import { NotFoundError, ForbiddenError, BadRequestError } from "../error/AppError.js";
@@ -28,4 +29,21 @@ export const createModuleService = async (courseId, data, user) => {
     })
     await newModule.save()
     return newModule
+}
+
+export const getCourseModulesService = async (courseId) => {
+    if (!mongoose.Types.ObjectId.isValid(courseId)) {
+        throw new BadRequestError("Invalid course id");
+    }
+    const course = await Course.findById(courseId)
+
+    if (!course) {
+        throw new NotFoundError("Course not found")
+    }
+
+    const modules = await Module.find({
+        course: courseId
+    }).sort({ order: 1 })
+
+    return modules
 }

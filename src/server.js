@@ -1,10 +1,10 @@
-import express from 'express';
-import dotenv from 'dotenv';
+import express from 'express'
+import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 
-import { connectDB } from './config/db.js';
-import { errorHandler } from './middleware/error.js';
+import { connectDB } from './config/db.js'
+import { errorHandler } from './middleware/error.js'
 
 import authRoutes from './routes/auth.route.js'
 import courseRoutes from './routes/course.route.js'
@@ -12,7 +12,7 @@ import healthRoute from './routes/health.route.js'
 import moduleRoutes from './routes/module.route.js'
 import usersRoutes from './routes/users.route.js'
 
-import ENV from './config/env.js';
+import ENV from './config/env.js'
 
 dotenv.config()
 
