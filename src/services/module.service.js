@@ -59,3 +59,35 @@ export const getModuleService = async (moduleId) => {
     }
     return foundModule
 }
+
+export const updateModuleService = async (moduleId, data, user) => {
+    if (!mongoose.Types.ObjectId.isValid(moduleId)) {
+        throw new BadRequestError("Invalid course id");
+    }
+    const foundModule = await Module.findById(moduleId)
+
+    if (!foundModule) {
+        throw new NotFoundError("Module not found")
+    }
+    const course = await Course.findById(foundModule.course)
+    if (
+        course.instructor.toString() !== user._id.toString() &&
+        user.role !== "admin"
+    ){
+        throw new ForbiddenError("Not authorized")
+    }
+
+    const allowedFields = [
+        "title",
+        "description",
+    ]
+
+    allowedFields.forEach(field => {
+        if (data[field] !== undefined) {
+            foundModule[field] = data[field];
+        }
+    })
+
+    foundModule.save()
+    return foundModule
+}

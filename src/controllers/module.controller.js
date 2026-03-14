@@ -1,4 +1,4 @@
-import { createModuleService, getCourseModulesService, getModuleService } from "../services/module.service.js"
+import { createModuleService, getCourseModulesService, getModuleService, updateModuleService } from "../services/module.service.js"
 
 export const createModule = async (req, res, next) => {
     try {
@@ -37,6 +37,22 @@ export const getModule = async (req, res, next) => {
     try {
         const module = await getModuleService(
             req.params.id
+        )
+        res.status(200).json({
+            success: true,
+            module
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const updateModule = async (req, res, next) => {
+    try {
+        const module = await updateModuleService(
+            req.params.id,
+            req.body,
+            req.user
         )
         res.status(200).json({
             success: true,
