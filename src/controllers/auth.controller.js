@@ -182,7 +182,7 @@ export const resetPassword = async (req, res) => {
         })
 
         if (!user) {
-            return res.status(404).json({ success: false, message: "invalid or expired reset token" })
+            return res.status(404).json({ success: false, message: "invalid or expired reset password token" })
         }
 
         const hashedPassword = await bcryptjs.hash(password, 10)
@@ -203,6 +203,36 @@ export const resetPassword = async (req, res) => {
             }
         })
 
+    } catch (error) {
+        console.log("Error in resetPassword ", error)
+        res.status(500).json({ success: false, message: error.message })
+    }
+}
+
+export const resetVerificationToken = async (req, res) => {
+    const { email } = req.body
+    try {
+        if (!email) {
+            return res.status(400).json({ message: "All fields are required" })
+        }
+        const user = await User.findOne({ email })
+        const verificationToken = generateVerificationToken()
+        generateTokenAndSetCookie(res, user._id)
+
+        await sendVerificationEmail(user.email, verificationToken)
+        user.verificationToken = verificationToken
+        user.verificationTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000 // 24 hours
+
+        await user.save()
+
+        res.status(201).json({
+            success: true,
+            message: "User created Successfully",
+            user: {
+                ...user._doc,
+                password: undefined,
+            }
+        })
     } catch (error) {
         console.log("Error in resetPassword ", error)
         res.status(500).json({ success: false, message: error.message })
