@@ -91,3 +91,24 @@ export const updateModuleService = async (moduleId, data, user) => {
     foundModule.save()
     return foundModule
 }
+
+export const deleteModuleService = async (moduleId, user) => {
+    if (!mongoose.Types.ObjectId.isValid(moduleId)) {
+        throw new BadRequestError("Invalid course id");
+    }
+    const foundModule = await Module.findById(moduleId)
+
+    if (!foundModule) {
+        throw new NotFoundError("Module not found")
+    }
+    const course = await Course.findById(foundModule.course)
+    if (
+        course.instructor.toString() !== user._id.toString() &&
+        user.role !== "admin"
+    ){
+        throw new ForbiddenError("Not authorized")
+    }
+
+    //await Lesson.deleteMany({ course: courseId });
+    await foundModule.deleteOne()
+}

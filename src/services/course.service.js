@@ -1,4 +1,5 @@
 import { Course } from "../models/Course.model.js"
+import { Module } from "../models/Module.model.js";
 import { uploadImage, deleteImage } from "../utils/cloudinary.js";
 import { NotFoundError, ForbiddenError, BadRequestError } from "../error/AppError.js";
 
@@ -89,7 +90,7 @@ export const deleteCourseService = async (courseId, user) => {
         await deleteImage(course.thumbnail.public_id)
     }
 
-    //await Module.deleteMany({ course: courseId });
+    await Module.deleteMany({ course: courseId });
     //await Lesson.deleteMany({ course: courseId });
     //await Enrollment.deleteMany({ course: courseId }); will add all that needs to later
 
