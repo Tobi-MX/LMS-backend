@@ -17,7 +17,7 @@ export const updateUserService = async (userId, data, file) => {
         }
 
         const profilePicUrl = await uploadImage(file)
-        user.thumbnail = {
+        user.profilePic = {
             url: profilePicUrl.secure_url,
             public_id: profilePicUrl.public_id
         }

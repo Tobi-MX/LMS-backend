@@ -13,3 +13,15 @@ export const updateMyProfile = async (req, res, next) => {
         next(err);
     }
 };
+
+export const getMyProfile = async (req, res, next) => {
+    try {
+        res.json({
+            name: req.user.name,
+            bio: req.user.bio,
+            profilePic: req.user.profilePic
+        })
+    } catch (error) {
+        
+    }
+}
