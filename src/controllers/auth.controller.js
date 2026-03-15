@@ -1,11 +1,5 @@
-import { User } from "../models/User.model.js"
-import bcryptjs from 'bcryptjs'
-import crypto from "crypto"
-import ENV from "../config/env.js"
-
 import { forgotPasswordService, loginService, resetPasswordService, resetVerificationTokenService, signupService, verifyEmailService } from "../services/auth.service.js"
 import { generateTokenAndSetCookie } from "../utils/generateVerificationToken.js"
-import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendResetSuccessEmail } from "../emails/emailHandler.js"
 
 export const signup = async (req, res, next) => {
     const { name, email, password, role } = req.body

@@ -53,20 +53,17 @@ export const updateCourseService = async (courseId, data, file, user) => {
             public_id: thumbnailUrl.public_id
         }
     }
-
     const allowedFields = [
         "title",
         "description",
         "thumbnail",
         "status"
     ]
-
     allowedFields.forEach(field => {
         if (data[field] !== undefined) {
             course[field] = data[field];
         }
     })
-
     await course.save()
     return course
 }
