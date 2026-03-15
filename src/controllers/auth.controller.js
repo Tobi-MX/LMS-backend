@@ -3,8 +3,7 @@ import bcryptjs from 'bcryptjs'
 import crypto from "crypto"
 import ENV from "../config/env.js"
 
-import { forgotPasswordService, loginService, resetPasswordService, signupService, verifyEmailService } from "../services/auth.service.js"
-import { generateVerificationToken } from "../utils/generateVerificationCode.js"
+import { forgotPasswordService, loginService, resetPasswordService, resetVerificationTokenService, signupService, verifyEmailService } from "../services/auth.service.js"
 import { generateTokenAndSetCookie } from "../utils/generateVerificationToken.js"
 import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendResetSuccessEmail } from "../emails/emailHandler.js"
 
@@ -126,18 +125,7 @@ export const resetPassword = async (req, res, next) => {
 export const resetVerificationToken = async (req, res) => {
     const { email } = req.body
     try {
-        if (!email) {
-            return res.status(400).json({ message: "All fields are required" })
-        }
-        const user = await User.findOne({ email })
-        const verificationToken = generateVerificationToken()
-        generateTokenAndSetCookie(res, user._id)
-
-        await sendVerificationEmail(user.email, verificationToken)
-        user.verificationToken = verificationToken
-        user.verificationTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000 // 24 hours
-
-        await user.save()
+        const user = resetVerificationTokenService(email)
 
         res.status(201).json({
             success: true,

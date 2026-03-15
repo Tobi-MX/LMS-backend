@@ -124,3 +124,19 @@ export const resetPasswordService = async (token, password) => {
 
     return user
 }
+
+export const resetVerificationTokenService = async (email) => {
+    if (!email) {
+        throw new BadRequestError("All fields are required")
+    }
+    const user = await User.findOne({ email })
+    const verificationToken = generateVerificationToken()
+    generateTokenAndSetCookie(res, user._id)
+
+    await sendVerificationEmail(user.email, verificationToken)
+    user.verificationToken = verificationToken
+    user.verificationTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000 // 24 hours
+
+    await user.save()
+    return user
+}
