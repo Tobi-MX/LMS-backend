@@ -101,6 +101,26 @@ export const forgotPasswordService = async (email) => {
     user.resetPasswordExpiresAt = resetTokenExpiresAt
     await user.save()
     await sendPasswordResetEmail(email, `${ENV.CLIENT_URL}/reset-password/${resetToken}`)
-    
+
+    return user
+}
+
+export const resetPasswordService = async (token, password) => {
+    const user = await User.findOne({
+        resetPasswordToken: token,
+        resetPasswordExpiresAt: { $gt: Date.now() }
+    })
+    if (!user) {
+        throw new NotFoundError("user not found, invalid or expired reset password token")
+    }
+    const hashedPassword = await bcryptjs.hash(password, 10)
+
+    user.password = hashedPassword
+    user.resetPasswordToken = undefined
+    user.resetPasswordExpiresAt = undefined
+
+    await user.save()
+    await sendResetSuccessEmail(user.email)
+
     return user
 }

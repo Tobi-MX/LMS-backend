@@ -3,7 +3,7 @@ import bcryptjs from 'bcryptjs'
 import crypto from "crypto"
 import ENV from "../config/env.js"
 
-import { forgotPasswordService, loginService, signupService, verifyEmailService } from "../services/auth.service.js"
+import { forgotPasswordService, loginService, resetPasswordService, signupService, verifyEmailService } from "../services/auth.service.js"
 import { generateVerificationToken } from "../utils/generateVerificationCode.js"
 import { generateTokenAndSetCookie } from "../utils/generateVerificationToken.js"
 import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendResetSuccessEmail } from "../emails/emailHandler.js"
@@ -101,28 +101,14 @@ export const forgotPassword = async (req, res, next) => {
     }
 }
 
-export const resetPassword = async (req, res) => {
+export const resetPassword = async (req, res, next) => {
     const { token } = req.params
     const { password } = req.body
     try {
-        const user = await User.findOne({
-            resetPasswordToken: token,
-            resetPasswordExpiresAt: { $gt: Date.now() }
-        })
-
-        if (!user) {
-            return res.status(404).json({ success: false, message: "invalid or expired reset password token" })
-        }
-
-        const hashedPassword = await bcryptjs.hash(password, 10)
-
-        user.password = hashedPassword
-        user.resetPasswordToken = undefined
-        user.resetPasswordExpiresAt = undefined
-
-        await user.save()
-        await sendResetSuccessEmail(user.email)
-
+        const user = await resetPasswordService(
+            token,
+            password
+        )
         res.status(201).json({
             success: true,
             message: "Password changed successfully",
@@ -131,10 +117,9 @@ export const resetPassword = async (req, res) => {
                 password: undefined,
             }
         })
-
     } catch (error) {
         console.log("Error in resetPassword ", error)
-        res.status(500).json({ success: false, message: error.message })
+        next(error)
     }
 }
 
