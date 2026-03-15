@@ -63,3 +63,21 @@ export const verifyEmailService = async (token) => {
     await sendWelcomeEmail(user.email, user.name)
     return user
 }
+
+export const loginService = async (email, password) => {
+    const user = await User.findOne({ email })
+    if (!user) {
+        throw new NotFoundError("Invalid credentials")
+    }
+    const isPasswordValid = await bcryptjs.compare(password, user.password)
+    if (!isPasswordValid) {
+        throw new NotFoundError("Invalid credentials")
+    }
+    if (user.role === "instructor" && (!user.isVerified || !user.isApproved)) {
+        throw new ForbiddenError("Verify email and wait for approval")
+    }
+
+    user.lastLogin = new Date()
+    await user.save()
+    return user
+}
