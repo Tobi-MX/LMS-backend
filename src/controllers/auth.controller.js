@@ -3,7 +3,7 @@ import bcryptjs from 'bcryptjs'
 import crypto from "crypto"
 import ENV from "../config/env.js"
 
-import { loginService, signupService, verifyEmailService } from "../services/auth.service.js"
+import { forgotPasswordService, loginService, signupService, verifyEmailService } from "../services/auth.service.js"
 import { generateVerificationToken } from "../utils/generateVerificationCode.js"
 import { generateTokenAndSetCookie } from "../utils/generateVerificationToken.js"
 import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendResetSuccessEmail } from "../emails/emailHandler.js"
@@ -61,7 +61,7 @@ export const login = async (req, res, next) => {
             password
         )
         generateTokenAndSetCookie(res, user._id)
-        
+
         res.status(200).json({
             success: true,
             message: "Logged in successfully",
@@ -81,30 +81,12 @@ export const logout = async (_, res) => {
     res.status(200).json({ success: true, message: "Logged out successfully" })
 }
 
-export const forgotPassword = async (req, res) => {
+export const forgotPassword = async (req, res, next) => {
     const { email } = req.body
     try {
-        const user = await User.findOne({ email })
-        if (!user) {
-            return res.status(404).json({ success: false, message: "User doesn't exist" })
-        }
-        if (!user.isVerified) {
-            return res.status(401).json({ success: false, message: "User not verified" })
-        }
-        if (user.role === "instructor" && (!user.isVerified || !user.isApproved)) {
-            return res.status(403).json({ message: "Verify email and wait for approval" })
-        }
+        const user = await forgotPasswordService(email)
 
-        const resetToken = crypto.randomBytes(20).toString("hex")
-        const resetTokenExpiresAt = Date.now() + 1000 * 60 * 60 * 1 // 1 hour
-
-        user.resetPasswordToken = resetToken
-        user.resetPasswordExpiresAt = resetTokenExpiresAt
-        await user.save()
-
-        await sendPasswordResetEmail(email, `${ENV.CLIENT_URL}/reset-password/${resetToken}`)
-
-        res.status(201).json({
+        res.status(200).json({
             success: true,
             message: "Password reset request sent Successfully",
             user: {
@@ -112,10 +94,10 @@ export const forgotPassword = async (req, res) => {
                 password: undefined,
             }
         })
-
+        
     } catch (error) {
         console.log("Error in forgotPassword ", error)
-        res.status(500).json({ success: false, message: error.message });
+        next(error);
     }
 }
 

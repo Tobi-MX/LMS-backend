@@ -2,7 +2,7 @@ import { User } from "../models/User.model.js"
 import bcryptjs from 'bcryptjs'
 import crypto from "crypto"
 import ENV from "../config/env.js"
-import { NotFoundError, ForbiddenError, BadRequestError, ConflictError } from "../error/AppError.js";
+import { NotFoundError, ForbiddenError, BadRequestError, ConflictError, UnauthorizedError } from "../error/AppError.js";
 
 import { generateVerificationToken } from "../utils/generateVerificationCode.js"
 import { generateTokenAndSetCookie } from "../utils/generateVerificationToken.js"
@@ -79,5 +79,28 @@ export const loginService = async (email, password) => {
 
     user.lastLogin = new Date()
     await user.save()
+    return user
+}
+
+export const forgotPasswordService = async (email) => {
+    const user = await User.findOne({ email })
+    if (!user) {
+        throw new NotFoundError("User doesn't exist")
+    }
+    if (!user.isVerified) {
+        throw new ForbiddenError("User not verified")
+    }
+    if (user.role === "instructor" && (!user.isVerified || !user.isApproved)) {
+        throw new ForbiddenError("Verify email and wait for approval")
+    }
+
+    const resetToken = crypto.randomBytes(20).toString("hex")
+    const resetTokenExpiresAt = Date.now() + 1000 * 60 * 60 * 1 // 1 hour
+
+    user.resetPasswordToken = resetToken
+    user.resetPasswordExpiresAt = resetTokenExpiresAt
+    await user.save()
+    await sendPasswordResetEmail(email, `${ENV.CLIENT_URL}/reset-password/${resetToken}`)
+    
     return user
 }
