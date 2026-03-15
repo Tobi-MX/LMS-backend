@@ -3,12 +3,12 @@ import bcryptjs from 'bcryptjs'
 import crypto from "crypto"
 import ENV from "../config/env.js"
 
-import { signupService } from "../services/auth.service.js"
+import { signupService, verifyEmailService } from "../services/auth.service.js"
 import { generateVerificationToken } from "../utils/generateVerificationCode.js"
 import { generateTokenAndSetCookie } from "../utils/generateVerificationToken.js"
 import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendResetSuccessEmail } from "../emails/emailHandler.js"
 
-export const signup = async (req, res) => {
+export const signup = async (req, res, next) => {
     const { name, email, password, role } = req.body
     try {
         const user = await signupService(
@@ -29,30 +29,17 @@ export const signup = async (req, res) => {
         })
 
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message })
+        console.log("error in signup", error)
+        next(error)
     }
 }
 
-export const verifyEmail = async (req, res) => {
+export const verifyEmail = async (req, res, next) => {
     const { token } = req.body
     try {
-        const user = await User.findOne({
-            verificationToken: token,
-            verificationTokenExpiresAt: { $gt: Date.now() }
-        })
+        const user = await verifyEmailService(token)
 
-        if (!user) {
-            return res.status(404).json({ success: false, message: "Invalid or expired verification token" })
-        }
-
-        user.isVerified = true
-        user.verificationToken = undefined
-        user.verificationTokenExpiresAt = undefined
-        await user.save()
-
-
-        await sendWelcomeEmail(user.email, user.name)
-        res.status(201).json({
+        res.status(200).json({
             success: true,
             message: "Email successfully verified",
             user: {
@@ -60,10 +47,9 @@ export const verifyEmail = async (req, res) => {
                 password: undefined
             },
         })
-
     } catch (error) {
         console.log("error in verify-email", error)
-        res.status(500).json({ success: false, message: "Server error" })
+        next(error)
     }
 }
 

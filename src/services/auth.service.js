@@ -43,3 +43,23 @@ export const signupService = async (name, email, password, role) => {
     await user.save()
     return user
 }
+
+export const verifyEmailService = async (token) => {
+    const user = await User.findOne({
+        verificationToken: token,
+        verificationTokenExpiresAt: { $gt: Date.now() }
+    })
+
+    if (!user) {
+        throw new NotFoundError("Invalid or expired verification token")
+    }
+
+    user.isVerified = true
+    user.verificationToken = undefined
+    user.verificationTokenExpiresAt = undefined
+    await user.save()
+
+
+    await sendWelcomeEmail(user.email, user.name)
+    return user
+}
