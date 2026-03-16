@@ -18,3 +18,7 @@ export const uploadLesson = async (file) => {
     });
     return uploadResponse;
 }
+
+export const deleteLesson = async (lessonUrl) => {
+    await cloudinary.uploader.destroy(lessonUrl)
+}

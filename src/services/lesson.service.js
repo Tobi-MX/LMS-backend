@@ -3,9 +3,12 @@ import { Lesson } from "../models/Lesson.model.js"
 import { Module } from "../models/Module.model.js"
 import { Course } from "../models/Course.model.js"
 import { BadRequestError, ForbiddenError, NotFoundError } from "../error/AppError.js"
-import { uploadLesson } from "../utils/cloudinary.js"
+import { uploadLesson, deleteLesson } from "../utils/cloudinary.js"
 
 export const createLessonService = async (moduleId, data, file, user) => {
+    if (!mongoose.Types.ObjectId.isValid(moduleId)) {
+        throw new BadRequestError("Invalid lesson id");
+    }
     const module = await Module.findById(moduleId);
     if (!module) {
         throw new NotFoundError("Module not found");
@@ -87,5 +90,64 @@ export const getLessonService = async (lessonId) => {
     if (!lesson) {
         throw new NotFoundError("lesson not found")
     }
+    return lesson
+}
+
+export const updateLessonService = async (lessonId, data, file, user) => {
+    if (!mongoose.Types.ObjectId.isValid(lessonId)) {
+        throw new BadRequestError("Invalid lesson id");
+    }
+
+    const lesson = await Lesson.findById(lessonId)
+    if (!lesson) {
+        throw new NotFoundError("Lesson not found")
+    }
+
+    const module = await Module.findById(lesson.module)
+    if (!module) {
+        throw new NotFoundError("Module not found")
+    }
+
+    const course = await Course.findById(module.course)
+    if (
+        course.instructor.toString() !== user._id.toString() &&
+        user.role !== "admin"
+    ) {
+        throw new ForbiddenError("Not authorized")
+    }
+
+    if (data.type === "video" || data.type === "pdf") {
+        lesson.content = undefined
+        if (!file) {
+            throw new BadRequestError("File is required")
+        }
+        if (lesson.file?.public_id) {
+            await deleteLesson(course.thumbnail.public_id)
+        }
+        const uploadResponse = await uploadLesson(file)
+        lesson.file = {
+            url: uploadResponse.secure_url,
+            public_id: uploadResponse.public_id
+        }
+        if (data.type === "video") {
+            lesson.duration = Math.round(uploadResponse.duration)
+        }
+    } else {
+        if (lesson.file?.public_id) {
+            lesson.file = undefined
+            await deleteLesson(course.thumbnail.public_id)
+        }
+    }
+    const allowedFields = [
+        "title",
+        "type",
+        "content",
+    ]
+    allowedFields.forEach(field => {
+        if (data[field] !== undefined) {
+            lesson[field] = data[field];
+        }
+    })
+    lesson.save()
     return lesson
 }

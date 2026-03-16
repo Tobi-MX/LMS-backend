@@ -57,7 +57,6 @@ export const updateCourseService = async (courseId, data, file, user) => {
     const allowedFields = [
         "title",
         "description",
-        "thumbnail",
         "status"
     ]
     allowedFields.forEach(field => {
@@ -89,7 +88,7 @@ export const deleteCourseService = async (courseId, user) => {
     }
 
     await Module.deleteMany({ course: courseId });
-    await Lesson.deleteMany({ course: courseId });
+    //await Lesson.deleteMany({ course: courseId });
     //await Enrollment.deleteMany({ course: courseId }); will add all that needs to later
 
     await course.deleteOne();
