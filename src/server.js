@@ -10,6 +10,7 @@ import authRoutes from './routes/auth.route.js'
 import courseRoutes from './routes/course.route.js'
 import healthRoute from './routes/health.route.js'
 import moduleRoutes from './routes/module.route.js'
+import lessonRoutes from './routes/lesson.route.js'
 import usersRoutes from './routes/users.route.js'
 
 import ENV from './config/env.js'
@@ -32,6 +33,7 @@ app.use('/api', healthRoute)
 app.use('/api/auth', authRoutes)
 app.use('/api/courses', courseRoutes)
 app.use('/api/modules', moduleRoutes)
+app.use('/api/lessons', lessonRoutes)
 app.use('/api/users', usersRoutes)
 
 app.use(errorHandler)

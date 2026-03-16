@@ -77,3 +77,15 @@ export const getModuleLessonsService = async (moduleId) => {
 
     return lessons
 }
+
+export const getLessonService = async (lessonId) => {
+    if (!mongoose.Types.ObjectId.isValid(lessonId)) {
+        throw new BadRequestError("Invalid lesson id");
+    }
+    const lesson = await Lesson.findById(lessonId)
+
+    if (!lesson) {
+        throw new NotFoundError("lesson not found")
+    }
+    return lesson
+}
