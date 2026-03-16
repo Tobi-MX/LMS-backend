@@ -41,3 +41,5 @@ router.patch("/:id",
 router.delete("/:id", deleteCourse)
 
 export default router
+
+// Remember every :id in here is for courses

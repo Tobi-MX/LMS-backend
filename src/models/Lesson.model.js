@@ -14,7 +14,11 @@ const lessonSchema = new mongoose.Schema({
         type: String,
         enum: ["video", "text", "pdf"]
     },
-    contentUrl: String,
+    content: String,
+    file: {
+        url: String,
+        public_id: String
+    },
     duration: Number,
     order: {
         type: Number,

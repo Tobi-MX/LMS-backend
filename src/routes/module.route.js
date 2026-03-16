@@ -23,3 +23,5 @@ router.post("/:id/lessons", createLesson)
 router.get("/:id/lessons", getModuleLessons)
 
 export default router
+
+// Remember every :id in here is for modules

@@ -8,3 +8,5 @@ router.patch("/:id", updateLesson)
 router.delete("/:id", deleteLesson)
 
 export default router;
+
+// Remember every :id in here is for lessons
