@@ -1,4 +1,4 @@
-import { createLessonService } from "../services/lesson.service.js"
+import { createLessonService, getModuleLessonsService } from "../services/lesson.service.js"
 
 export const createLesson = async (req, res, next) => {
     try {
@@ -21,8 +21,17 @@ export const createLesson = async (req, res, next) => {
     }
 }
 
-export const getModuleLessons = async () => {
+export const getModuleLessons = async (req, res, next) => {
+    try {
+        const data = await getModuleLessonsService(req.params.id)
 
+        res.status(200).json({
+            success: true,
+            data
+        })
+    } catch (error) {
+        next(error)
+    }
 }
 
 export const getLesson = async () => {

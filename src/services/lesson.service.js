@@ -1,3 +1,4 @@
+import mongoose from "mongoose"
 import { Lesson } from "../models/Lesson.model.js"
 import { Module } from "../models/Module.model.js"
 import { Course } from "../models/Course.model.js"
@@ -13,7 +14,9 @@ export const createLessonService = async (moduleId, data, file, user) => {
     if (!course) {
         throw new NotFoundError("Course not found")
     };
-    if (course.instructor.toString() !== user.id) {
+    if (user.role !== "admin" &&
+        course.instructor.toString() !== user.id
+    ) {
         throw new ForbiddenError("Not authorized");
     }
     // calculate order
@@ -56,4 +59,21 @@ export const createLessonService = async (moduleId, data, file, user) => {
     })
     await lesson.save()
     return lesson
-};
+}
+
+export const getModuleLessonsService = async (moduleId) => {
+    if (!mongoose.Types.ObjectId.isValid(moduleId)) {
+        throw new BadRequestError("Invalid course id");
+    }
+    const module = await Module.findById(moduleId)
+
+    if (!module) {
+        throw new NotFoundError("Module not found")
+    }
+
+    const lessons = await Lesson.find({
+        module: moduleId
+    }).sort({ order: 1 })
+
+    return lessons
+}

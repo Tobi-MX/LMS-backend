@@ -9,6 +9,16 @@ import { upload } from "../lib/multer.js"
 
 const router = express.Router()
 
+
+// LESSON CONTROLLER
+router.post("/:id/lessons",
+    authenticate,
+    authorize("Instructor", "admin"),
+    upload.single("file"), 
+    createLesson
+)
+router.get("/:id/lessons", getModuleLessons)
+
 /* ---------- PUBLIC ROUTES ---------- */
 router.get("/:id", getModule)
 
@@ -18,13 +28,6 @@ router.use(authenticate, authorize("instructor", "admin"))
 
 router.patch("/:id", updateModule)
 router.delete("/:id", deleteModule)
-
-// LESSON CONTROLLER
-router.post("/:id/lessons", 
-    upload.single("file"), 
-    createLesson
-)
-router.get("/:id/lessons", getModuleLessons)
 
 export default router
 
