@@ -1,6 +1,7 @@
 import express from 'express'
 
 import { getModule, updateModule, deleteModule } from '../controllers/module.controller.js'
+import { createLesson, getModuleLessons } from '../controllers/lesson.controller.js'
 
 import { authenticate } from "../middleware/authenticate.middleware.js"
 import { authorize } from '../middleware/authorize.middleware.js'
@@ -18,5 +19,7 @@ router.patch("/:id", updateModule)
 router.delete("/:id", deleteModule)
 
 
+router.post("/:id/lessons", createLesson)
+router.get("/:id/lessons", getModuleLessons)
 
 export default router
