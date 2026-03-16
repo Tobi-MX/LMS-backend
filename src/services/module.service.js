@@ -95,7 +95,7 @@ export const updateModuleService = async (moduleId, data, user) => {
 
 export const deleteModuleService = async (moduleId, user) => {
     if (!mongoose.Types.ObjectId.isValid(moduleId)) {
-        throw new BadRequestError("Invalid course id");
+        throw new BadRequestError("Invalid module id");
     }
     const foundModule = await Module.findById(moduleId)
 

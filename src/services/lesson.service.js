@@ -151,3 +151,29 @@ export const updateLessonService = async (lessonId, data, file, user) => {
     lesson.save()
     return lesson
 }
+
+export const deleteLessonService = async (lessonId, user) => {
+    if (!mongoose.Types.ObjectId.isValid(lessonId)) {
+        throw new BadRequestError("Invalid module id");
+    }
+    const lesson = await Lesson.findById(lessonId)
+
+    if (!lesson) {
+        throw new NotFoundError("Lesson not found")
+    }
+
+    const module = await Module.findById(lesson.module)
+    if (!module) {
+        throw new NotFoundError("Module not found")
+    }
+
+    const course = await Course.findById(module.course)
+    if (
+        course.instructor.toString() !== user._id.toString() &&
+        user.role !== "admin"
+    ) {
+        throw new ForbiddenError("Not authorized")
+    }
+
+    await lesson.deleteOne()
+}
