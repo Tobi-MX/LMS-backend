@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { Module } from "../models/Module.model.js";
 import { Course } from "../models/Course.model.js";
+import { Lesson } from "../models/Lesson.model.js";
 import { NotFoundError, ForbiddenError, BadRequestError } from "../error/AppError.js";
 
 export const createModuleService = async (courseId, data, user) => {
@@ -109,6 +110,6 @@ export const deleteModuleService = async (moduleId, user) => {
         throw new ForbiddenError("Not authorized")
     }
 
-    //await Lesson.deleteMany({ course: courseId });
+    await Lesson.deleteMany({ module: moduleId });
     await foundModule.deleteOne()
 }

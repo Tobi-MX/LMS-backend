@@ -1,23 +1,22 @@
-
+import { createLessonService } from "../services/lesson.service.js"
 
 export const createLesson = async (req, res, next) => {
-    const { title } = req.body
     try {
-        if (!title) {
-            return res.status(400).json({ success: false, message: "Course title is required" })
+        if (!req.body.title) {
+            res.status(400).json({ success: false, message: "Title is required" })
         }
         const lesson = await createLessonService(
-            req,
-            req.user._id
+            req.params.id,
+            req.body,
+            req.file,
+            req.user
         )
+
         res.status(201).json({
             success: true,
-            message: "Lesson created Successfully",
-            course
+            data: lesson
         })
-
     } catch (error) {
-        console.log("error in createCourse", error)
         next(error)
     }
 }

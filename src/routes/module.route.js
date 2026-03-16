@@ -5,6 +5,7 @@ import { createLesson, getModuleLessons } from '../controllers/lesson.controller
 
 import { authenticate } from "../middleware/authenticate.middleware.js"
 import { authorize } from '../middleware/authorize.middleware.js'
+import { upload } from "../lib/multer.js"
 
 const router = express.Router()
 
@@ -18,8 +19,11 @@ router.use(authenticate, authorize("instructor", "admin"))
 router.patch("/:id", updateModule)
 router.delete("/:id", deleteModule)
 
-
-router.post("/:id/lessons", createLesson)
+// LESSON CONTROLLER
+router.post("/:id/lessons", 
+    upload.single("file"), 
+    createLesson
+)
 router.get("/:id/lessons", getModuleLessons)
 
 export default router

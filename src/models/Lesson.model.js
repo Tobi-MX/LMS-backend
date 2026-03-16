@@ -26,4 +26,4 @@ const lessonSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-export default mongoose.model("Lesson", lessonSchema);
+export const Lesson = mongoose.model("Lesson", lessonSchema);
