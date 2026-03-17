@@ -1,4 +1,4 @@
-import { enrollInCourseService } from "../services/enrollment.service.js";
+import { enrollInCourseService, getEnrolledCoursesService } from "../services/enrollment.service.js";
 
 export const enrollInCourse = async (req, res, next) => {
     try {
@@ -14,4 +14,17 @@ export const enrollInCourse = async (req, res, next) => {
     } catch (error) {
         next(error)
     }
+}
+
+export const getEnrolledCourses = async (req, res, next) => {
+  try {
+    const courses = await getEnrolledCoursesService(req.user.id)
+
+    res.json({
+      success: true,
+      data: courses
+    })
+  } catch (error) {
+    next(error);
+  }
 };
