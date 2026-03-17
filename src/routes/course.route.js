@@ -2,11 +2,18 @@ import express from "express"
 
 import { createCourse, updateCourse, deleteCourse, getCourses, getCourse, getMyCourses, getInstructorCourses } from "../controllers/course.controller.js"
 import { createModule, getCourseModules } from "../controllers/module.controller.js"
+import { enrollInCourse } from "../controllers/enrollment.controller.js"
 import { authenticate } from "../middleware/authenticate.middleware.js"
 import { authorize } from "../middleware/authorize.middleware.js"
 import { upload } from "../lib/multer.js"
 
 const router = express.Router()
+
+// ENROLLMENT CONTROLLERS
+router.post("/:id/enroll",
+    authenticate,
+    enrollInCourse
+)
 
 
 // MODULE CONTROLLERS
@@ -17,6 +24,8 @@ router.post("/:id/modules",
 )
 router.get("/:id/modules", getCourseModules)
 
+
+// =================================================================
 router.get("/me", authenticate, authorize("instructor"), getMyCourses)
 //gets logged in instructors courses (Like for instructor dashboard)
 
