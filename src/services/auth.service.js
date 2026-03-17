@@ -73,9 +73,6 @@ export const loginService = async (email, password) => {
     if (!isPasswordValid) {
         throw new NotFoundError("Invalid credentials")
     }
-    if (user.role === "instructor" && (!user.isVerified || !user.isApproved)) {
-        throw new ForbiddenError("Verify email and wait for approval")
-    }
 
     user.lastLogin = new Date()
     await user.save()
