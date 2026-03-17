@@ -87,8 +87,11 @@ export const deleteCourseService = async (courseId, user) => {
         await deleteImage(course.thumbnail.public_id)
     }
 
+    const modules = await Module.find({ course: courseId })
+    const moduleIds = modules.map(m => m._id)
+
     await Module.deleteMany({ course: courseId });
-    //await Lesson.deleteMany({ course: courseId });
+    await Lesson.deleteMany({ module: { $in: moduleIds }});
     //await Enrollment.deleteMany({ course: courseId }); will add all that needs to later
 
     await course.deleteOne();
