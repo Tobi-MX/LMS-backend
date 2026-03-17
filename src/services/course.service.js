@@ -1,6 +1,7 @@
 import { Course } from "../models/Course.model.js"
 import { Module } from "../models/Module.model.js";
 import { Lesson } from "../models/Lesson.model.js"
+import { Enrollment } from "../models/Enrollment.model.js";
 import { uploadImage, deleteImage } from "../utils/cloudinary.js";
 import { NotFoundError, ForbiddenError, BadRequestError } from "../error/AppError.js";
 
@@ -90,9 +91,9 @@ export const deleteCourseService = async (courseId, user) => {
     const modules = await Module.find({ course: courseId })
     const moduleIds = modules.map(m => m._id)
 
-    await Module.deleteMany({ course: courseId });
-    await Lesson.deleteMany({ module: { $in: moduleIds }});
-    //await Enrollment.deleteMany({ course: courseId }); will add all that needs to later
+    await Module.deleteMany({ course: courseId })
+    await Lesson.deleteMany({ module: { $in: moduleIds }})
+    await Enrollment.deleteMany({ course: courseId }) //will add all that needs to later
 
     await course.deleteOne();
 }

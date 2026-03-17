@@ -19,10 +19,11 @@ export const enrollInCourseService = async (courseId, user) => {
         throw new ConflictError("Already enrolled")
     }
 
-    const enrollment = await Enrollment.create({
+    const enrollment = new Enrollment({
         user: user._id,
         course: courseId
     })
 
+    enrollment.save()
     return enrollment
 }
