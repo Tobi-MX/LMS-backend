@@ -1,6 +1,6 @@
 import { Enrollment } from "../models/Enrollment.model.js"
 import { Course } from "../models/Course.model.js"
-import { BadRequestError, ConflictError, NotFoundError } from "../error/AppError.js"
+import { BadRequestError, ConflictError, NotFoundError, ForbiddenError } from "../error/AppError.js"
 
 export const enrollInCourseService = async (courseId, user) => {
     const course = await Course.findById(courseId)
@@ -22,14 +22,36 @@ export const enrollInCourseService = async (courseId, user) => {
         course: courseId
     })
 
-    enrollment.save() 
+    enrollment.save()
     return enrollment
 }
 
 export const getEnrolledCoursesService = async (userId) => {
+
     const enrollments = await Enrollment
         .find({ user: userId })
         .populate("course")
 
     return enrollments
+}
+
+export const getCourseStudentsService = async (courseId, user) => {
+    const course = await Course.findById(courseId)
+
+    if (!course) {
+        throw new NotFoundError("Course not found")
+    }
+
+    if (
+        course.instructor.toString() !== user._id.toString() &&
+        user.role !== "admin"
+    ) {
+        throw new ForbiddenError("Not authorized")
+    }
+
+    const students = await Enrollment
+        .find({ course: courseId })
+        .populate("user")
+
+    return students;
 }

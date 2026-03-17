@@ -2,7 +2,7 @@ import express from "express"
 
 import { createCourse, updateCourse, deleteCourse, getCourses, getCourse, getMyCourses, getInstructorCourses } from "../controllers/course.controller.js"
 import { createModule, getCourseModules } from "../controllers/module.controller.js"
-import { enrollInCourse } from "../controllers/enrollment.controller.js"
+import { enrollInCourse, getCourseStudents } from "../controllers/enrollment.controller.js"
 import { authenticate } from "../middleware/authenticate.middleware.js"
 import { authorize } from "../middleware/authorize.middleware.js"
 import { upload } from "../lib/multer.js"
@@ -15,7 +15,14 @@ router.post("/:id/enroll",
     enrollInCourse
 )
 
+router.get("/:id/students",
+    authenticate,
+    authorize("instructor", "admin"),
+    getCourseStudents
+)
 
+
+//==================================================================
 // MODULE CONTROLLERS
 router.post("/:id/modules", 
     authenticate, 
