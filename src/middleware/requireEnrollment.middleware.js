@@ -24,7 +24,7 @@ export const requireEnrollment = async (req, res, next) => {
 
         if (
             course.instructor.toString() === req.user._id &&
-            user.role !== "admin"
+            req.user.role !== "admin"
         ) {
             return next()
         }

@@ -5,7 +5,7 @@ import { NotFoundError } from "../error/AppError.js";
 
 export const requireModuleAccess = async (req, res, next) => {
   try {
-    const moduleId = req.params.moduleId
+    const moduleId = req.params.id
 
     const module = await Module.findById(moduleId)
     if (!module) {
@@ -17,7 +17,10 @@ export const requireModuleAccess = async (req, res, next) => {
         throw new NotFoundError("Course not found")
     }
 
-    if (course.instructor.toString() === req.user.id) {
+    if (
+        course.instructor.toString() === req.user._id &&
+        req.user.role !== "admin"
+    ) {
       return next()
     }
 

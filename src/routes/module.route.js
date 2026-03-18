@@ -6,6 +6,7 @@ import { createLesson, getModuleLessons } from '../controllers/lesson.controller
 import { authenticate } from "../middleware/authenticate.middleware.js"
 import { authorize } from '../middleware/authorize.middleware.js'
 import { upload } from "../lib/multer.js"
+import { requireModuleAccess } from '../middleware/requireModuleAccess.middleware.js'
 
 const router = express.Router()
 
@@ -17,7 +18,11 @@ router.post("/:id/lessons",
     upload.single("file"), 
     createLesson
 )
-router.get("/:id/lessons", getModuleLessons)
+router.get("/:id/lessons",
+    authenticate,
+    requireModuleAccess,
+    getModuleLessons,
+)
 
 /* ---------- PUBLIC ROUTES ---------- */
 router.get("/:id", getModule)
