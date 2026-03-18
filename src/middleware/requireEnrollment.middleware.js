@@ -2,16 +2,16 @@ import { Lesson } from "../models/Lesson.model.js";
 import { Module } from "../models/Module.model.js";
 import { Course } from "../models/Course.model.js";
 import { Enrollment } from "../models/Enrollment.model.js";
-import { NotFoundError, ForbiddenError, BadRequestError } from "../error/AppError.js";
+import { NotFoundError } from "../error/AppError.js";
 
 export const requireEnrollment = async (req, res, next) => {
-    const { lessonId } = req.params
+    const lessonId = req.params.id
     try {
         const lesson = await Lesson.findById(lessonId)
         if (!lesson) {
             throw new NotFoundError("Lesson not found")
         }
-        
+
         const module = await Module.findById(lesson.module)
         if (!module) {
             throw new NotFoundError("Module not found")
@@ -23,7 +23,7 @@ export const requireEnrollment = async (req, res, next) => {
         }
 
         if (
-            course.instructor.toString() === req.user.id &&
+            course.instructor.toString() === req.user._id &&
             user.role !== "admin"
         ) {
             return next()

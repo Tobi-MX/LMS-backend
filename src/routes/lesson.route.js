@@ -3,12 +3,11 @@ import { getLesson, updateLesson, deleteLesson } from "../controllers/lesson.con
 import { authenticate } from "../middleware/authenticate.middleware.js"
 import { authorize } from "../middleware/authorize.middleware.js"
 import { upload } from "../lib/multer.js"
+import { requireEnrollment } from "../middleware/requireEnrollment.middleware.js"
 const router = express.Router()
 
-/* ---------- PUBLIC ROUTES ---------- */
-router.get("/:id", getLesson)
+router.get("/:id", authenticate, requireEnrollment, getLesson)
 
-/* ---------- AUTH REQUIRED ---------- */
 router.use(authenticate, authorize("instructor", "admin"))
 
 router.patch("/:id", 

@@ -13,7 +13,7 @@ const router = express.Router()
 // LESSON CONTROLLER
 router.post("/:id/lessons",
     authenticate,
-    authorize("Instructor", "admin"),
+    authorize("instructor", "admin"),
     upload.single("file"), 
     createLesson
 )
