@@ -4,8 +4,19 @@ import { authenticate } from "../middleware/authenticate.middleware.js"
 import { authorize } from "../middleware/authorize.middleware.js"
 import { upload } from "../lib/multer.js"
 import { requireEnrollment } from "../middleware/requireEnrollment.middleware.js"
+import { createQuiz } from "../controllers/quiz.controller.js"
+
 const router = express.Router()
 
+// QUIZ CONTROLLER
+router.post("/:id/quiz",
+  authenticate,
+  authorize("instructor", "admin"),
+  createQuiz
+)
+
+
+//===============================================================================
 router.get("/:id", 
     authenticate, 
     requireEnrollment, 
