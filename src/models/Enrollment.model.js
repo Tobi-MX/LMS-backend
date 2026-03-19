@@ -18,8 +18,17 @@ const enrollmentSchema = new mongoose.Schema({
         type: String,
         enum: ["active", "completed"],
         default: "active"
-    }
+    },
 
+    progress: {
+        type: Number,
+        default: 0 // percentage
+    },
+
+    completedLessons: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Lesson"
+    }]
 }, { timestamps: true });
 
 enrollmentSchema.index({ user: 1, course: 1 }, { unique: true });
