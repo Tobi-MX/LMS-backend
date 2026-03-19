@@ -4,6 +4,7 @@ import { Module } from "../models/Module.model.js"
 import { Course } from "../models/Course.model.js"
 import { BadRequestError, ForbiddenError, NotFoundError } from "../error/AppError.js"
 import { uploadLesson, deleteLesson } from "../utils/cloudinary.js"
+import { Enrollment } from "../models/Enrollment.model.js"
 
 export const createLessonService = async (moduleId, data, file, user) => {
     if (!mongoose.Types.ObjectId.isValid(moduleId)) {
@@ -176,4 +177,53 @@ export const deleteLessonService = async (lessonId, user) => {
     }
 
     await lesson.deleteOne()
+}
+
+export const completeLessonService = async (lessonId, userId) => {
+
+    const lesson = await Lesson.findById(lessonId)
+    if (!lesson) {
+        throw new NotFoundError("Lesson not found")
+    }
+
+    const module = await Module.findById(lesson.module)
+    if (!module) {
+        throw new NotFoundError("Module not found")
+    }
+
+    const course = await Course.findById(module.course)
+    if (!course) {
+        throw new NotFoundError("Course not found")
+    }
+
+    const enrollment = await Enrollment.findOne({
+        user: userId,
+        course: course._id
+    })
+    
+    if (!enrollment) {
+        throw new NotFoundError("Not enrolled")
+    }
+
+    if (enrollment.completedLessons.includes(lessonId)) {
+        return enrollment;
+    } // check if the lesson is already completed, to avoid duplicate not to F the math
+
+    enrollment.completedLessons.push(lessonId) // add the lesson as completed
+
+    const modules = await Module.find({ course: course._id }).select("_id")
+    const modulesId = modules.map(m => m._id)
+    const totalLessons = await Lesson.countDocuments({
+        module: { $in: modulesId }
+    })
+
+    enrollment.progress = (enrollment.completedLessons.length / totalLessons) * 100
+
+    if (enrollment.progress === 100) {
+        enrollment.status = "completed"
+    }
+
+    await enrollment.save();
+
+    return enrollment;
 }

@@ -144,7 +144,7 @@ export const getMyCoursesService = async (instructorId) => {
     }).sort({ createdAt: -1 })
 
     return courses;
-};
+}
 
 export const getInstructorCoursesService = async (instructorId) => {
     if (!mongoose.Types.ObjectId.isValid(instructorId)) {
@@ -157,4 +157,4 @@ export const getInstructorCoursesService = async (instructorId) => {
         .sort({ createdAt: -1 });
 
     return courses;
-};
+}
