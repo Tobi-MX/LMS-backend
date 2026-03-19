@@ -3,12 +3,21 @@ import express from "express"
 import { createCourse, updateCourse, deleteCourse, getCourses, getCourse, getMyCourses, getInstructorCourses } from "../controllers/course.controller.js"
 import { createModule, getCourseModules } from "../controllers/module.controller.js"
 import { enrollInCourse, getCourseStudents } from "../controllers/enrollment.controller.js"
+import { getCourseProgress } from "../controllers/lesson.controller.js"
 import { authenticate } from "../middleware/authenticate.middleware.js"
 import { authorize } from "../middleware/authorize.middleware.js"
 import { upload } from "../lib/multer.js"
 
 const router = express.Router()
 
+// LESSON CONTROLLERS
+router.get("/:id/progress",
+    authenticate,
+    getCourseProgress
+)
+
+
+// ==================================================================
 // ENROLLMENT CONTROLLERS
 router.post("/:id/enroll",
     authenticate,
@@ -22,11 +31,11 @@ router.get("/:id/students",
 )
 
 
-//==================================================================
+// ==================================================================
 // MODULE CONTROLLERS
-router.post("/:id/modules", 
-    authenticate, 
-    authorize("instructor", "admin"), 
+router.post("/:id/modules",
+    authenticate,
+    authorize("instructor", "admin"),
     createModule
 )
 router.get("/:id/modules", getCourseModules)

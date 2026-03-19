@@ -180,7 +180,6 @@ export const deleteLessonService = async (lessonId, user) => {
 }
 
 export const completeLessonService = async (lessonId, userId) => {
-
     const lesson = await Lesson.findById(lessonId)
     if (!lesson) {
         throw new NotFoundError("Lesson not found")
@@ -200,7 +199,7 @@ export const completeLessonService = async (lessonId, userId) => {
         user: userId,
         course: course._id
     })
-    
+
     if (!enrollment) {
         throw new NotFoundError("Not enrolled")
     }
@@ -226,4 +225,17 @@ export const completeLessonService = async (lessonId, userId) => {
     await enrollment.save();
 
     return enrollment;
+}
+
+export const getCourseProgressService = async (courseId, userId) => {
+    const enrollment = await Enrollment.findOne({
+        user: userId,
+        course: courseId
+    }).populate("completedLessons")
+
+    if (!enrollment) {
+        throw new ForbiddenError("Not enrolled")
+    }
+
+    return enrollment
 }

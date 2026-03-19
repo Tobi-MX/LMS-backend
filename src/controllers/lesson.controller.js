@@ -1,4 +1,4 @@
-import { createLessonService, getModuleLessonsService, getLessonService, updateLessonService, deleteLessonService, completeLessonService } from "../services/lesson.service.js"
+import { createLessonService, getModuleLessonsService, getLessonService, updateLessonService, deleteLessonService, completeLessonService, getCourseProgressService } from "../services/lesson.service.js"
 
 export const createLesson = async (req, res, next) => {
     try {
@@ -88,9 +88,25 @@ export const completeLesson = async(req, res, next) => {
             req.user._id
         )
 
-        res.status(200).json({
+        res.status(201).json({
             success: true,
             data: lesson
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const getCourseProgress = async (req, res, next) => {
+    try {
+        const progress = await getCourseProgressService(
+            req.params.id,
+            req.user._id
+        )
+
+        res.status(200).json({
+            success: true,
+            data: progress
         })
     } catch (error) {
         next(error)
