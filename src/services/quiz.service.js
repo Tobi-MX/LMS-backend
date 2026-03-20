@@ -39,4 +39,27 @@ export const createQuizService = async (lessonId, data, user) => {
 
     quiz.save()
     return quiz
-};
+}
+
+export const submitQuizService = async (quizId, answers, userId) => {
+    const quiz = await Quiz.findById(quizId)
+    if (!quiz) {
+        throw new NotFoundError("Quiz not found")
+    }
+
+    let score = 0
+
+    quiz.questions.forEach((q, index) => {
+        if (answers[index] === q.correctAnswer) {
+            score++
+        }
+    })
+
+    const percentage = (score / quiz.questions.length) * 100
+
+    return {
+        score,
+        percentage,
+        passed: percentage >= quiz.passingScore
+    }
+}
