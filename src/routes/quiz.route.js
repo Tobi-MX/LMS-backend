@@ -2,6 +2,7 @@ import express from "express"
 import { authenticate } from "../middleware/authenticate.middleware.js"
 import { startQuiz, submitQuiz } from "../controllers/quiz.controller.js"
 import { requireQuizAccess } from "../middleware/requireQuizAccess.middleware.js"
+import { requireAttemptAccess } from "../middleware/requireAttemptAccess.middleware.js"
 
 const router = express.Router()
 
@@ -11,9 +12,9 @@ router.post("/:id/start",
     startQuiz
 )
 
-router.post("/:id/submit",
+router.post("/attempts/:attemptId/submit",
     authenticate,
-    requireQuizAccess,
+    requireAttemptAccess,
     submitQuiz
 )
 

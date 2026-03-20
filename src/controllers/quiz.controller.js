@@ -52,9 +52,8 @@ export const startQuiz = async (req, res, next) => {
 export const submitQuiz = async (req, res, next) => {
     try {
         const result = await submitQuizService(
-            req.params.id,
+            req.params.attemptId,
             req.body.answers,
-            req.user.id
         )
 
         res.json({

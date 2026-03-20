@@ -105,25 +105,43 @@ export const startQuizService = async (quizId, userId) => {
     return attempt
 }
 
-export const submitQuizService = async (quizId, answers, userId) => {
-    const quiz = await Quiz.findById(quizId)
-    if (!quiz) {
-        throw new NotFoundError("Quiz not found")
+export const submitQuizService = async (attemptId, answers) => {
+    const attempt = await QuizAttempt.findById(attemptId).populate("quiz")
+    if (!attempt) {
+        throw new NotFoundError("Attempt not found")
     }
+
+    const quiz = attempt.quiz
 
     let score = 0
 
     quiz.questions.forEach((q, index) => {
-        if (answers[index] === q.correctAnswer) {
+        const userAnswer = answers.find(a => a.questionIndex === index)
+
+        if (userAnswer && userAnswer.selectedOption === q.correctAnswer) {
             score++
         }
     })
 
     const percentage = (score / quiz.questions.length) * 100
 
-    return {
-        score,
-        percentage,
-        passed: percentage >= quiz.passingScore
+    // time calculation
+    const submittedAt = new Date()
+    const duration = (submittedAt - attempt.startedAt) / 1000
+
+    // enforce time limit
+    if (quiz.timeLimit && duration > quiz.timeLimit) {
+        throw new Error("Time limit exceeded")
     }
+
+    attempt.answers = answers
+    attempt.score = score
+    attempt.percentage = percentage
+    attempt.passed = percentage >= quiz.passingScore
+    attempt.submittedAt = submittedAt
+    attempt.duration = duration
+
+    await attempt.save()
+
+    return attempt
 }
