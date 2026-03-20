@@ -29,6 +29,18 @@ const quizSchema = new mongoose.Schema({
     passingScore: {
         type: Number,
         default: 50
+    },
+
+    timeLimit: Number,
+
+    maxAttempts: {
+        type: Number,
+        default: 1
+    },
+
+    shuffleQuestions: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });
 
