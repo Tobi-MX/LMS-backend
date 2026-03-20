@@ -32,6 +32,12 @@ export const createQuizService = async (lessonId, data, user) => {
         throw new ForbiddenError("Not authorized")
     }
 
+    const existingQuiz = await Quiz.findOne({ lesson: lessonId });
+
+    if (existingQuiz) {
+        throw ForbiddenError("Quiz already exists for this lesson");
+    }
+
     const quiz = new Quiz({
         lesson: lessonId,
         questions: data.questions,
@@ -43,6 +49,34 @@ export const createQuizService = async (lessonId, data, user) => {
 
     await quiz.save()
     return quiz
+}
+
+export const getQuizService = async (lessonId) => {
+    const lesson = await Lesson.findById(lessonId)
+    if (!lesson) {
+        throw new NotFoundError("Lesson not found")
+    }
+
+    const quiz = await Quiz.findOne({ lesson: lessonId }).lean()
+    if (!quiz) {
+        throw new NotFoundError("Quiz not found")
+    }
+
+    let questions = [...quiz.questions]
+
+    if (quiz.shuffleQuestions) {
+        questions = shuffleArray(questions)
+    }
+
+    const sanitizedQuestions = questions.map(q => ({
+        question: q.question,
+        options: q.options
+    }))
+
+    return {
+        ...quiz,
+        questions: sanitizedQuestions
+    }
 }
 
 export const startQuizService = async (quizId, userId) => {

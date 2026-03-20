@@ -1,4 +1,4 @@
-import { createQuizService, startQuizService, submitQuizService } from "../services/quiz.service.js";
+import { createQuizService, startQuizService, submitQuizService, getQuizService } from "../services/quiz.service.js";
 
 export const createQuiz = async (req, res, next) => {
     try {
@@ -13,6 +13,21 @@ export const createQuiz = async (req, res, next) => {
             data: quiz
         })
 
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const getQuiz = async (req, res, next) => {
+    try {
+        const quiz = await getQuizService(
+            req.params.id
+        )
+
+        res.status(200).json({
+            success: true,
+            data: quiz
+        })
     } catch (error) {
         next(error)
     }
