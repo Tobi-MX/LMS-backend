@@ -1,3 +1,4 @@
+import { QuizAttempt } from "../models/QuizAttempt.model.js";
 import { Quiz } from "../models/Quiz.model.js";
 import { Lesson } from "../models/Lesson.model.js";
 import { Module } from "../models/Module.model.js";
@@ -40,8 +41,34 @@ export const createQuizService = async (lessonId, data, user) => {
         shuffleQuestions: data.shuffleQuestions
     })
 
-    quiz.save()
+    await quiz.save()
     return quiz
+}
+
+export const startQuizService = async (quizId, userId) => {
+    const quiz = await Quiz.findById(quizId)
+    if (!quiz) {
+        throw new NotFoundError("Quiz not found")
+    }
+
+    // check attempts
+    const attemptsCount = await QuizAttempt.countDocuments({
+        user: userId,
+        quiz: quizId
+    })
+
+    if (quiz.maxAttempts && attemptsCount >= quiz.maxAttempts) {
+        throw new ForbiddenError("Maximum attempts reached")
+    }
+
+    const attempt = new QuizAttempt({
+        user: userId,
+        quiz: quizId,
+        startedAt: new Date()
+    })
+
+    await attempt.save()
+    return attempt
 }
 
 export const submitQuizService = async (quizId, answers, userId) => {

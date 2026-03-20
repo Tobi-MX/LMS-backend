@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 const quizAttemptSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -28,4 +30,4 @@ const quizAttemptSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-export const QuizAttempt = mongoose.model("QuizAttempt", QuizAttempt)
+export const QuizAttempt = mongoose.model("QuizAttempt", quizAttemptSchema)
