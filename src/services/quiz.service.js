@@ -34,7 +34,10 @@ export const createQuizService = async (lessonId, data, user) => {
     const quiz = new Quiz({
         lesson: lessonId,
         questions: data.questions,
-        passingScore: data.passingScore || 50
+        passingScore: data.passingScore || 50,
+        timeLimit: data.timeLimit,
+        maxAttempts: data.maxAttempts,
+        shuffleQuestions: data.shuffleQuestions
     })
 
     quiz.save()
