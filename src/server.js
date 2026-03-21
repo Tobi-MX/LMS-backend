@@ -9,7 +9,7 @@ import { errorHandler } from './middleware/error.js'
 import authRoutes from './routes/auth.route.js'
 import courseRoutes from './routes/course.route.js'
 import healthRoute from './routes/health.route.js'
-import instructorRoutes from './routes/instructor.route.js'
+import analyticsRoutes from './routes/instructor.route.js'
 import moduleRoutes from './routes/module.route.js'
 import lessonRoutes from './routes/lesson.route.js'
 import quizRoutes from './routes/quiz.route.js'
@@ -34,7 +34,7 @@ app.use(cookieParser()) // allows to parse incoming cookies
 app.use('/api/auth', authRoutes)
 app.use('/api/courses', courseRoutes)
 app.use('/api', healthRoute)
-app.use('/api/instructor', instructorRoutes)
+app.use('/api/analytics', analyticsRoutes)
 app.use('/api/modules', moduleRoutes)
 app.use('/api/lessons', lessonRoutes)
 app.use('/api/quizzes', quizRoutes)

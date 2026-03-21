@@ -1,4 +1,4 @@
-import { getInstructorCourseAnalyticsService, getInstructorQuizAnalyticsService } from "../services/analytics.service.js";
+import { getInstructorCourseAnalyticsService, getInstructorQuizAnalyticsService, getStudentAnalyticsService } from "../services/analytics.service.js";
 
 export const getInstructorCourseAnalytics = async (req, res, next) => {
   try {
@@ -21,6 +21,22 @@ export const getInstructorQuizAnalytics = async (req, res, next) => {
   try {
     const data = await getInstructorQuizAnalyticsService(
       req.params.quizId,
+      req.user.id
+    )
+
+    res.json({
+      success: true,
+      data
+    })
+
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getStudentAnalytics = async (req, res, next) => {
+  try {
+    const data = await getStudentAnalyticsService(
       req.user.id
     )
 

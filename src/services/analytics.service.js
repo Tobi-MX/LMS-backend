@@ -1,5 +1,6 @@
 import { Enrollment } from "../models/Enrollment.model.js";
 import { Course } from "../models/Course.model.js";
+import { QuizAttempt } from "../models/QuizAttempt.model.js";
 import { Quiz } from "../models/Quiz.model.js";
 import { Lesson } from "../models/Lesson.model.js";
 import { Module } from "../models/Module.model.js";
@@ -50,7 +51,7 @@ export const getInstructorQuizAnalyticsService = async (quizId, instructorId) =>
     if (!module) {
         throw new NotFoundError("Module not found")
     }
-    
+
     const course = await Course.findById(module.course)
     if (!course) {
         throw new NotFoundError("Course not found")
@@ -88,5 +89,29 @@ export const getInstructorQuizAnalyticsService = async (quizId, instructorId) =>
         avgScore: data.avgScore,
         totalAttempts: data.totalAttempts,
         passRate
+    }
+}
+
+export const getStudentAnalyticsService = async (userId) => {
+    const enrollments = await Enrollment.find({ user: userId })
+        .populate("course", "title")
+
+    const attempts = await QuizAttempt.find({ user: userId })
+        .populate("quiz", "lesson")
+
+    const bestScores = await QuizAttempt.aggregate([
+        { $match: { user: userId } },
+        {
+            $group: {
+                _id: "$quiz",
+                bestScore: { $max: "$percentage" }
+            }
+        }
+    ])
+
+    return {
+        enrollments,
+        attempts,
+        bestScores
     }
 }
