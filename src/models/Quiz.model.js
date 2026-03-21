@@ -44,6 +44,4 @@ const quizSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-quizSchema.index({ lesson: 1 }, { unique: true });
-
 export const Quiz = mongoose.model("Quiz", quizSchema);
