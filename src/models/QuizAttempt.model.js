@@ -14,8 +14,9 @@ const quizAttemptSchema = new mongoose.Schema({
     },
 
     answers: [{
-        questionIndex: Number,
-        selectedOption: Number
+        questionId: mongoose.Schema.Types.ObjectId,
+        selectedOption: Number,
+        _id: false
     }],
 
     score: Number,

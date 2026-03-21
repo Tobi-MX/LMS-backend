@@ -4,6 +4,7 @@ import { Lesson } from "../models/Lesson.model.js";
 import { Module } from "../models/Module.model.js";
 import { Course } from "../models/Course.model.js";
 import { BadRequestError, ForbiddenError, NotFoundError } from "../error/AppError.js";
+import { shuffleArray } from "../utils/shuffleArray.js";
 
 export const createQuizService = async (lessonId, data, user) => {
     const lesson = await Lesson.findById(lessonId)
@@ -30,6 +31,12 @@ export const createQuizService = async (lessonId, data, user) => {
         user.role !== "admin"
     ) {
         throw new ForbiddenError("Not authorized")
+    }
+
+    const existingQuiz = await Quiz.findOne({ lesson: lessonId });
+
+    if (existingQuiz) {
+        throw new ForbiddenError("Quiz already exists for this lesson");
     }
 
     const quiz = new Quiz({
@@ -59,7 +66,8 @@ export const getQuizService = async (quizId) => {
 
     const sanitizedQuestions = questions.map(q => ({
         question: q.question,
-        options: q.options
+        options: q.options,
+        _id: q._id
     }))
 
     return {
@@ -104,8 +112,8 @@ export const submitQuizService = async (attemptId, answers) => {
 
     let score = 0
 
-    quiz.questions.forEach((q, index) => {
-        const userAnswer = answers.find(a => a.questionIndex === index)
+    quiz.questions.forEach(q => {
+        const userAnswer = answers.find(a => a.questionId.toString() === q._id.toString())
 
         if (userAnswer && userAnswer.selectedOption === q.correctAnswer) {
             score++
@@ -129,6 +137,7 @@ export const submitQuizService = async (attemptId, answers) => {
     attempt.passed = percentage >= quiz.passingScore
     attempt.submittedAt = submittedAt
     attempt.duration = duration
+    attempt.quiz.questions = undefined
 
     await attempt.save()
 
