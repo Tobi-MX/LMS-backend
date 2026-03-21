@@ -1,7 +1,7 @@
 import express from "express"
 import { authenticate } from "../middleware/authenticate.middleware.js"
 import { authorize } from "../middleware/authorize.middleware.js"
-import { getInstructorCourseAnalytics, getInstructorQuizAnalytics, getStudentAnalytics } from "../controllers/analytics.controller.js"
+import { getInstructorCourseAnalytics, getInstructorQuizAnalytics, getStudentAnalytics, getAdminAnalytics } from "../controllers/analytics.controller.js"
 
 const router = express.Router()
 
@@ -25,5 +25,11 @@ router.get("/me",
     getStudentAnalytics
 )
 
+// ADMIN
+router.get("/admin",
+    authenticate,
+    authorize("admin"),
+    getAdminAnalytics
+)
 
 export default router

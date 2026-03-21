@@ -1,4 +1,5 @@
 import { Enrollment } from "../models/Enrollment.model.js";
+import { User } from "../models/User.model.js";
 import { Course } from "../models/Course.model.js";
 import { QuizAttempt } from "../models/QuizAttempt.model.js";
 import { Quiz } from "../models/Quiz.model.js";
@@ -113,5 +114,20 @@ export const getStudentAnalyticsService = async (userId) => {
         enrollments,
         attempts,
         bestScores
+    }
+}
+
+export const getAdminAnalyticsService = async () => {
+    const totalUsers = await User.countDocuments()
+    const totalCourses = await Course.countDocuments()
+    const totalEnrollments = await Enrollment.countDocuments()
+
+    const activeUsers = await QuizAttempt.distinct("user")
+
+    return {
+        totalUsers,
+        totalCourses,
+        totalEnrollments,
+        activeUsers: activeUsers.length
     }
 }
