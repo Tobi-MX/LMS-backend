@@ -1,5 +1,8 @@
 import { Enrollment } from "../models/Enrollment.model.js";
 import { Course } from "../models/Course.model.js";
+import { Quiz } from "../models/Quiz.model.js";
+import { Lesson } from "../models/Lesson.model.js";
+import { Module } from "../models/Module.model.js";
 import { ForbiddenError, NotFoundError } from "../error/AppError.js";
 
 export const getInstructorCourseAnalyticsService = async (courseId, instructorId) => {
@@ -29,5 +32,61 @@ export const getInstructorCourseAnalyticsService = async (courseId, instructorId
     return {
         totalStudents,
         avgProgress
+    }
+}
+
+export const getInstructorQuizAnalyticsService = async (quizId, instructorId) => {
+    const quiz = await Quiz.findById(quizId)
+    if (!quiz) {
+        throw new NotFoundError("Quiz not found")
+    }
+
+    const lesson = await Lesson.findById(quiz.lesson)
+    if (!lesson) {
+        throw new NotFoundError("Lesson not found")
+    }
+
+    const module = await Module.findById(lesson.module)
+    if (!module) {
+        throw new NotFoundError("Module not found")
+    }
+    
+    const course = await Course.findById(module.course)
+    if (!course) {
+        throw new NotFoundError("Course not found")
+    }
+
+    if (course.instructor.toString() !== instructorId) {
+        throw new ForbiddenError("Not authorized")
+    }
+
+    const stats = await QuizAttempt.aggregate([
+        { $match: { quiz: quizId } },
+        {
+            $group: {
+                _id: null,
+                avgScore: { $avg: "$percentage" },
+                totalAttempts: { $sum: 1 },
+                passed: {
+                    $sum: { $cond: ["$passed", 1, 0] }
+                }
+            }
+        }
+    ])
+
+    const data = stats[0] || {
+        avgScore: 0,
+        totalAttempts: 0,
+        passed: 0
+    }
+
+    const passRate = data.totalAttempts
+        ? (data.passed / data.totalAttempts) * 100
+        : 0
+
+    return {
+        avgScore: data.avgScore,
+        totalAttempts: data.totalAttempts,
+        passRate
     }
 }
