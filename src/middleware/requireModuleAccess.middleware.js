@@ -18,7 +18,7 @@ export const requireModuleAccess = async (req, res, next) => {
     }
 
     if (
-        course.instructor.toString() === req.user._id &&
+        course.instructor.toString() === req.user._id.toString() &&
         req.user.role !== "admin"
     ) {
       return next()
