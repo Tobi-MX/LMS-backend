@@ -13,7 +13,16 @@ export const createDiscussionService = async (lessonId, userId, content) => {
         user: userId,
         content
     })
-    
+
     discussion.save()
     return discussion
+}
+
+export const getLessonDiscussionsService = async (lessonId) => {
+
+    const discussions = await Discussion.find({ lesson: lessonId })
+        .populate("user", "name")
+        .sort({ createdAt: -1 })
+
+    return discussions
 }

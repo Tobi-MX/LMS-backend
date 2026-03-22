@@ -1,4 +1,4 @@
-import { createDiscussionService } from "../services/discussion.service.js";
+import { createDiscussionService, getLessonDiscussionsService } from "../services/discussion.service.js";
 
 export const createDiscussion = async (req, res, next) => {
     try {
@@ -9,6 +9,21 @@ export const createDiscussion = async (req, res, next) => {
         )
 
         res.status(201).json({
+            success: true,
+            data: discussion
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const getLessonDiscussions = async (req, res, next) => {
+    try {
+        const discussion = await getLessonDiscussionsService(
+            req.params.id
+        )
+
+        res.status(200).json({
             success: true,
             data: discussion
         })
