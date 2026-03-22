@@ -8,6 +8,7 @@ import { errorHandler } from './middleware/error.js'
 
 import authRoutes from './routes/auth.route.js'
 import courseRoutes from './routes/course.route.js'
+import discussionRoutes from './routes/discussion.route.js'
 import healthRoute from './routes/health.route.js'
 import analyticsRoutes from './routes/instructor.route.js'
 import moduleRoutes from './routes/module.route.js'
@@ -33,6 +34,7 @@ app.use(cookieParser()) // allows to parse incoming cookies
 
 app.use('/api/auth', authRoutes)
 app.use('/api/courses', courseRoutes)
+app.use('/api/discussions', discussionRoutes)
 app.use('/api', healthRoute)
 app.use('/api/analytics', analyticsRoutes)
 app.use('/api/modules', moduleRoutes)
