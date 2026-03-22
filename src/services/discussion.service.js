@@ -41,6 +41,7 @@ export const deleteDiscussionService = async (discussionId, user) => {
         throw new ForbiddenError("Not authorized")
     }
 
+    await Reply.deleteMany({ discussion: discussionId })
     await discussion.deleteOne()
 }
 
@@ -67,4 +68,20 @@ export const getDiscussionRepliesService = async (discussionId) => {
         .sort({ createdAt: 1 })
 
     return replies
+}
+
+export const deleteReplyService = async (replyId, user) => {
+    const reply = await Reply.findById(replyId)
+    if (!reply) {
+        throw new NotFoundError("Reply not found")
+    }
+
+    if (
+        reply.user.toString() !== user._id.toString() &&
+        user.role !== "admin"
+    ) {
+        throw new ForbiddenError("Not authorized")
+    }
+
+    await reply.deleteOne()
 }
