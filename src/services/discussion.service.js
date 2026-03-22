@@ -46,6 +46,11 @@ export const deleteDiscussionService = async (discussionId, user) => {
 
 
 export const createReplyService = async (discussionId, userId, content) => {
+    const discussion = await Discussion.findById(discussionId)
+    if (!discussion) {
+        throw new NotFoundError("Discussion not found")
+    }
+
     const reply = new Reply({
         discussion: discussionId,
         user: userId,
@@ -53,5 +58,13 @@ export const createReplyService = async (discussionId, userId, content) => {
     })
 
     reply.save()
-    return reply;
-};
+    return reply
+}
+
+export const getDiscussionRepliesService = async (discussionId) => {
+    const replies = await Reply.find({ discussion: discussionId })
+        .populate("user", "name")
+        .sort({ createdAt: 1 })
+
+    return replies
+}

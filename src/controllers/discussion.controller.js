@@ -1,4 +1,4 @@
-import { createDiscussionService, createReplyService, deleteDiscussionService, getLessonDiscussionsService } from "../services/discussion.service.js";
+import { createDiscussionService, createReplyService, deleteDiscussionService, getDiscussionRepliesService, getLessonDiscussionsService } from "../services/discussion.service.js";
 
 export const createDiscussion = async (req, res, next) => {
     try {
@@ -52,7 +52,7 @@ export const deleteDiscussion = async (req, res, next) => {
 export const createReply = async (req, res, next) => {
     try {
         const reply = await createReplyService(
-            req.params.discussionId,
+            req.params.id,
             req.user.id,
             req.body.content
         )
@@ -66,3 +66,19 @@ export const createReply = async (req, res, next) => {
         next(error)
     }
 }
+
+export const getDiscussionReplies = async (req, res, next) => {
+    try {
+        const replies = await getDiscussionRepliesService(
+            req.params.id
+        )
+
+        res.json({
+            success: true,
+            data: replies
+        })
+
+    } catch (error) {
+        next(error)
+    }
+};

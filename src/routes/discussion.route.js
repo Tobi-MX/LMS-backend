@@ -1,6 +1,6 @@
 import express from "express"
 import { authenticate } from "../middleware/authenticate.middleware.js";
-import { createReply, deleteDiscussion } from "../controllers/discussion.controller.js";
+import { createReply, deleteDiscussion, getDiscussionReplies } from "../controllers/discussion.controller.js";
 
 const router = express.Router()
 
@@ -13,6 +13,11 @@ router.delete("/:id",
 router.post("/:id/replies",
     authenticate,
     createReply
+)
+
+router.get("/:id/replies",
+    authenticate,
+    getDiscussionReplies
 )
 
 export default router;
