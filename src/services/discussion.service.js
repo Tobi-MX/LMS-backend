@@ -1,4 +1,5 @@
 import { Discussion } from "../models/Discussion.model.js"
+import { Reply } from "../models/Reply.model.js";
 import { Lesson } from "../models/Lesson.model.js"
 import { ForbiddenError, NotFoundError } from "../error/AppError.js";
 
@@ -42,3 +43,15 @@ export const deleteDiscussionService = async (discussionId, user) => {
 
     await discussion.deleteOne()
 }
+
+
+export const createReplyService = async (discussionId, userId, content) => {
+    const reply = new Reply({
+        discussion: discussionId,
+        user: userId,
+        content
+    })
+
+    reply.save()
+    return reply;
+};
