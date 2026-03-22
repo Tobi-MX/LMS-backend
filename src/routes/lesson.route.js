@@ -5,25 +5,35 @@ import { authorize } from "../middleware/authorize.middleware.js"
 import { upload } from "../lib/multer.js"
 import { requireEnrollment } from "../middleware/requireEnrollment.middleware.js"
 import { createQuiz } from "../controllers/quiz.controller.js"
+import { createDiscussion } from "../controllers/discussion.controller.js"
 
 const router = express.Router()
 
+//DISCUSSION CONTROLLER
+router.post("/:id/discussions",
+    authenticate,
+    createDiscussion
+)
+
+
+
+//===============================================================================
 // QUIZ CONTROLLER
 router.post("/:id/quiz",
-  authenticate,
-  authorize("instructor", "admin"),
-  createQuiz
+    authenticate,
+    authorize("instructor", "admin"),
+    createQuiz
 )
 
 
 //===============================================================================
-router.get("/:id", 
-    authenticate, 
-    requireEnrollment, 
+router.get("/:id",
+    authenticate,
+    requireEnrollment,
     getLesson
 )
 
-router.post("/:id/complete", 
+router.post("/:id/complete",
     authenticate,
     requireEnrollment,
     completeLesson
@@ -31,8 +41,8 @@ router.post("/:id/complete",
 
 router.use(authenticate, authorize("instructor", "admin"))
 
-router.patch("/:id", 
-    upload.single("file"), 
+router.patch("/:id",
+    upload.single("file"),
     updateLesson
 )
 router.delete("/:id", deleteLesson)
