@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Enrollment } from "../models/Enrollment.model.js";
 import { User } from "../models/User.model.js";
 import { Course } from "../models/Course.model.js";
@@ -63,7 +64,7 @@ export const getInstructorQuizAnalyticsService = async (quizId, instructorId) =>
     }
 
     const stats = await QuizAttempt.aggregate([
-        { $match: { quiz: quizId } },
+        { $match: { quiz: new mongoose.Types.ObjectId(quizId) } },
         {
             $group: {
                 _id: null,
@@ -76,11 +77,7 @@ export const getInstructorQuizAnalyticsService = async (quizId, instructorId) =>
         }
     ])
 
-    const data = stats[0] || {
-        avgScore: 0,
-        totalAttempts: 0,
-        passed: 0
-    }
+    const data = stats[0]
 
     const passRate = data.totalAttempts
         ? (data.passed / data.totalAttempts) * 100

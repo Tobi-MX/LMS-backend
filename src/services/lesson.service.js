@@ -42,7 +42,7 @@ export const createLessonService = async (moduleId, data, file, user) => {
         if (!file) {
             throw new BadRequestError("File is required")
         }
-        const uploadResponse = await uploadLesson(file)
+        const uploadResponse = await uploadLesson(file, data.type)
         fileUrl = uploadResponse.secure_url
         filePublicId = uploadResponse.public_id
         if (data.type === "video") {

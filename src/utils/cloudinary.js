@@ -12,9 +12,17 @@ export const deleteImage = async (imageUrl) => {
     await cloudinary.uploader.destroy(imageUrl)
 }
 
-export const uploadLesson = async (file) => {
+export const uploadLesson = async (file, type) => {
+    let resourceType;
+
+    if (type === "video") {
+        resourceType = "video";
+    } else if (type === "pdf") {
+        resourceType = "raw";
+    }
+
     const uploadResponse = await cloudinary.uploader.upload(file.path, {
-        resource_type: "auto",
+        resource_type: resourceType,
         access_mode: "public",
         folder: "ai-lms/lessons"
     });
