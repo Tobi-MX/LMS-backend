@@ -31,6 +31,7 @@ export const getEnrolledCoursesService = async (userId) => {
     const enrollments = await Enrollment
         .find({ user: userId })
         .populate("course")
+        .populate("user")
 
     return enrollments
 }
