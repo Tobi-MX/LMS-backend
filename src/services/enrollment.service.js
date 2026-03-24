@@ -1,5 +1,6 @@
 import { Enrollment } from "../models/Enrollment.model.js"
 import { Course } from "../models/Course.model.js"
+import { User } from "../models/User.model.js"
 import { BadRequestError, ConflictError, NotFoundError, ForbiddenError } from "../error/AppError.js"
 
 export const enrollInCourseService = async (courseId, user) => {
@@ -30,8 +31,13 @@ export const getEnrolledCoursesService = async (userId) => {
 
     const enrollments = await Enrollment
         .find({ user: userId })
-        .populate("course")
-        .populate("user")
+        .populate({
+            path: "course",
+            populate: {
+                path: "instructor",
+                select: "name email"
+            }
+        })
 
     return enrollments
 }
