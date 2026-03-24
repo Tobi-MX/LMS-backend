@@ -1,9 +1,9 @@
-import ENV from "../config/env";
+import ENV from "../config/env.js";
 
 export const callGemini = async (prompt) => {
   const API_KEY = ENV.GEMINI_API_KEY;
   // Use gemini-1.5-flash for speed/efficiency or gemini-2.0-flash for latest features
-  const MODEL = "gemini-1.5-flash"; 
+  const MODEL = "gemini-2.5-flash-lite"; 
   const URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${API_KEY}`;
 
   try {

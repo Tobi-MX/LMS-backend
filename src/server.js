@@ -6,6 +6,7 @@ import cors from 'cors'
 import { connectDB } from './config/db.js'
 import { errorHandler } from './middleware/error.js'
 
+import aiRoutes from './routes/ai.route.js'
 import authRoutes from './routes/auth.route.js'
 import courseRoutes from './routes/course.route.js'
 import discussionRoutes from './routes/discussion.route.js'
@@ -32,6 +33,7 @@ app.use(cors({
 }))
 app.use(cookieParser()) // allows to parse incoming cookies
 
+app.use('/api/ai', aiRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/courses', courseRoutes)
 app.use('/api/discussions', discussionRoutes)
