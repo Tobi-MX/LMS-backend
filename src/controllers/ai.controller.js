@@ -1,4 +1,4 @@
-import { generateCourseSuggestionsService, generateStudentFeedbackService } from "../services/ai.service.js"
+import { generateCourseSuggestionsService, generateQuizService, generateStudentFeedbackService } from "../services/ai.service.js"
 
 export const getStudentFeedback = async (req, res, next) => {
     try {
@@ -27,6 +27,23 @@ export const generateCourseSuggestions = async (req, res, next) => {
         res.json({
             success: true,
             data: suggestion
+        })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const generateQuiz = async (req, res, next) => {
+    try {
+        const quiz = await generateQuizService(
+            req.params.lessonId,
+            req.user.id
+        )
+
+        res.json({
+            success: true,
+            data: quiz
         })
 
     } catch (error) {

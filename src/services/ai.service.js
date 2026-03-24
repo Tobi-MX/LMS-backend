@@ -5,6 +5,7 @@ import { Lesson } from "../models/Lesson.model.js";
 import { Course } from "../models/Course.model.js";
 import { callGemini } from "../utils/gemini.js";
 import { ForbiddenError, NotFoundError } from "../error/AppError.js";
+import { extractJSON } from "../utils/extractJson.js";
 
 export const generateStudentFeedbackService = async (userId, courseId) => {
     const enrollment = await Enrollment.findOne({
@@ -61,7 +62,7 @@ export const generateCourseSuggestionsService = async (courseId, instructorId) =
     const course = await Course.findById(courseId)
     if (!course) throw new NotFoundError("Course not found")
 
-    if (course.instructor.toString() !== instructorId) {
+    if (course.instructor.toString() !== instructorId.toString()) {
         throw new ForbiddenError("Not authorized")
     }
 
@@ -87,4 +88,55 @@ Be concise.
 `
 
     return await callGemini(prompt)
+}
+
+export const generateQuizService = async (lessonId, instructorId) => {
+
+    const lesson = await Lesson.findById(lessonId)
+    if (!lesson) throw new NotFoundError("Lesson not found")
+
+    const module = await Module.findById(lesson.module)
+    if (!module) throw new NotFoundError("Module not found")
+
+    const course = await Course.findById(module.course)
+    if (!course) throw new NotFoundError("Course not found")
+
+    if (course.instructor.toString() !== instructorId.toString()) {
+        throw new ForbiddenError("Not authorized")
+    }
+
+    const prompt = `
+Generate a quiz based on this lesson:
+
+Title: ${lesson.title}
+
+IMPORTANT:
+- Return ONLY valid JSON
+- Do NOT include explanations
+- Do NOT use markdown
+
+Format:
+{
+  "questions": [
+    {
+      "question": "...",
+      "options": ["...", "...", "...", "..."],
+      "correctAnswer": 0
+    }
+  ]
+}
+  Generate 7 questions
+`
+    const text = await callGemini(prompt)
+
+    let parsed
+
+    try {
+        const jsonString = extractJSON(text)
+        parsed = JSON.parse(jsonString)
+    } catch (err) {
+        throw new Error("Failed to parse AI response")
+    }
+
+    return parsed
 }

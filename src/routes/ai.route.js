@@ -1,6 +1,6 @@
 import express from 'express'
 import { authenticate } from '../middleware/authenticate.middleware.js'
-import { getStudentFeedback, generateCourseSuggestions } from '../controllers/ai.controller.js'
+import { getStudentFeedback, generateCourseSuggestions, generateQuiz } from '../controllers/ai.controller.js'
 import { authorize } from '../middleware/authorize.middleware.js'
 
 const router = express.Router()
@@ -18,6 +18,13 @@ router.post(
     authenticate,
     authorize("instructor"),
     generateCourseSuggestions
+)
+
+router.post(
+    "/lessons/:lessonId/generate-quiz",
+    authenticate,
+    authorize("instructor"),
+    generateQuiz
 )
 
 export default router
