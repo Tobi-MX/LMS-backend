@@ -137,3 +137,29 @@ export const resetVerificationTokenService = async (email) => {
     await user.save()
     return user
 }
+
+export const changePasswordService = async (data, userId) => {
+    const user = await User.findById(userId)
+
+    if (!user) {
+        throw new NotFoundError("User not found");
+    }
+    if (!user.isApproved || !user.isVerified) {
+        throw new ForbiddenError("Account is not verified or approved.")
+    }
+    if (!data.password || !data.passwordUpdate) {
+        throw new BadRequestError("Fill both new and old passwords")
+    }
+
+    const isPasswordValid = await bcryptjs.compare(data.password, user.password)
+    if (!isPasswordValid) {
+        throw new NotFoundError("Invalid credentials")
+    }
+
+    const hashedPassword = await bcryptjs.hash(data.passwordUpdate, 10)
+
+    user.password = hashedPassword
+    await user.save()
+    
+    return user
+}

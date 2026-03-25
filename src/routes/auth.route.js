@@ -1,6 +1,6 @@
 import express from "express"
 
-import { signup, verifyEmail, login, logout, forgotPassword, resetPassword, resetVerificationToken } from "../controllers/auth.controller.js"
+import { signup, verifyEmail, login, logout, forgotPassword, resetPassword, resetVerificationToken, changePassword } from "../controllers/auth.controller.js"
 import { authenticate } from "../middleware/authenticate.middleware.js"
 
 const router = express.Router()
@@ -17,5 +17,9 @@ router.post("/reset-verification", resetVerificationToken)
 router.post("/verify-email", verifyEmail)
 router.post("/forgot-password", forgotPassword)
 router.post("/reset-password/:token", resetPassword)
+router.patch("/change-password",
+    authenticate, 
+    changePassword
+)
 
 export default router

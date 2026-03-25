@@ -1,4 +1,4 @@
-import { forgotPasswordService, loginService, resetPasswordService, resetVerificationTokenService, signupService, verifyEmailService } from "../services/auth.service.js"
+import { changePasswordService, forgotPasswordService, loginService, resetPasswordService, resetVerificationTokenService, signupService, verifyEmailService } from "../services/auth.service.js"
 import { generateTokenAndSetCookie } from "../utils/generateVerificationToken.js"
 
 export const signup = async (req, res, next) => {
@@ -132,5 +132,23 @@ export const resetVerificationToken = async (req, res) => {
     } catch (error) {
         console.log("Error in resetPassword ", error)
         res.status(500).json({ success: false, message: error.message })
+    }
+}
+
+export const changePassword = async (req, res, next) => {
+    try {
+        const user = await changePasswordService(
+            req.body,
+            req.user.id
+        )
+
+        res.status(200).json({
+            success: true,
+            message: "Password changed successfully",
+            data: user
+        })
+
+    } catch (error) {
+        next(error)
     }
 }
