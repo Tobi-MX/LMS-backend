@@ -1,4 +1,4 @@
-import { updateUserService, getUserProfileService } from "../services/users.service.js";
+import { updateUserService, getUserProfileService, deleteAccountService } from "../services/users.service.js";
 
 export const updateMyProfile = async (req, res, next) => {
     try {
@@ -22,7 +22,7 @@ export const getMyProfile = async (req, res, next) => {
             profilePic: req.user.profilePic
         })
     } catch (error) {
-        
+
     }
 }
 
@@ -31,11 +31,27 @@ export const getUserProfile = async (req, res, next) => {
         const user = await getUserProfileService(
             req.params.id
         )
+
         res.json({
             success: true,
             data: user
         })
     } catch (error) {
-        
+        next(error)
+    }
+}
+
+export const deleteAccount = async (req, res, next) => {
+    try {
+        await deleteAccountService(
+            req.user.id
+        )
+
+        res.json({
+            success: true,
+            message: "Account deleted successfully"
+        })
+    } catch (error) {
+        next(error)
     }
 }

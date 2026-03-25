@@ -1,4 +1,6 @@
 import { User } from "../models/User.model.js"
+import { Enrollment } from "../models/Enrollment.model.js";
+import { Course } from "../models/Course.model.js";
 import { uploadImage, deleteImage } from "../utils/cloudinary.js";
 import { NotFoundError, ForbiddenError } from "../error/AppError.js";
 
@@ -50,5 +52,33 @@ export const getUserProfileService = async (userId) => {
         name: user.name,
         bio: user.bio,
         profilePic: user.profilePic
+    }
+}
+
+export const deleteAccountService = async (userId) => {
+    const user = await User.findById(userId)
+
+    if (!user) {
+        throw new NotFoundError("User not found")
+    }
+
+    if (user.role === "student") {
+        await Enrollment.deleteMany({ user: user._id })
+        await User.findByIdAndDelete(user._id)
+    }
+
+    if (user.role === "instructor") {
+
+        await Course.updateMany(
+            { instructor: user._id },
+            {
+                $set: {
+                    instructor: null,
+                    instructorName: "Deleted Instructor"
+                }
+            }
+        )
+
+        await User.findByIdAndDelete(user._id)
     }
 }
