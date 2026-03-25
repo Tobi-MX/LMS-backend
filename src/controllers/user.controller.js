@@ -1,4 +1,4 @@
-import { updateUserService } from "../services/users.service.js";
+import { updateUserService, getUserProfileService } from "../services/users.service.js";
 
 export const updateMyProfile = async (req, res, next) => {
     try {
@@ -20,6 +20,20 @@ export const getMyProfile = async (req, res, next) => {
             name: req.user.name,
             bio: req.user.bio,
             profilePic: req.user.profilePic
+        })
+    } catch (error) {
+        
+    }
+}
+
+export const getUserProfile = async (req, res, next) => {
+    try {
+        const user = await getUserProfileService(
+            req.params.id
+        )
+        res.json({
+            success: true,
+            data: user
         })
     } catch (error) {
         

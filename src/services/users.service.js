@@ -37,4 +37,18 @@ export const updateUserService = async (userId, data, file) => {
 
     await user.save()
     return user
-};
+}
+
+export const getUserProfileService = async (userId) => {
+    const user = await User.findById(userId)
+
+    if (!user) {
+        throw new NotFoundError("User not found")
+    }
+
+    return {
+        name: user.name,
+        bio: user.bio,
+        profilePic: user.profilePic
+    }
+}
