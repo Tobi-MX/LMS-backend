@@ -1,3 +1,4 @@
+![Project Status](https://img.shields.io/badge/status-completed-brightgreen)
 # LMS-Backend
 Backend for a full-featured LMS supporting authentication, course management, AI-powered features, and interactive lessons discussions.
 
