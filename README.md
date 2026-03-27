@@ -1,5 +1,5 @@
 # LMS-Backend
-Backend for a full-featured LMS supporting authentication, course management, AI-powered features, and real-time discussions.
+Backend for a full-featured LMS supporting authentication, course management, AI-powered features, and interactive lessons discussions.
 
 ---
 
