@@ -51,7 +51,8 @@ export const getUserProfileService = async (userId) => {
     return {
         name: user.name,
         bio: user.bio,
-        profilePic: user.profilePic
+        profilePic: user.profilePic,
+        id: req.user._id
     }
 }
 

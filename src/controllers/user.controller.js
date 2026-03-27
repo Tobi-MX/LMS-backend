@@ -19,10 +19,11 @@ export const getMyProfile = async (req, res, next) => {
         res.json({
             name: req.user.name,
             bio: req.user.bio,
-            profilePic: req.user.profilePic
+            profilePic: req.user.profilePic,
+            id: req.user._id
         })
     } catch (error) {
-
+        next(error)
     }
 }
 
