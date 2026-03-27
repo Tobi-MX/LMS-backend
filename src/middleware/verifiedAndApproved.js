@@ -1,4 +1,4 @@
-import { ForbiddenError } from "../error/AppError";
+import { ForbiddenError } from "../error/AppError.js";
 
 export const isVerifiedAndApproved = (req, res, next) => {
     if (!req.user?.isApproved || !req.user?.isVerified) {

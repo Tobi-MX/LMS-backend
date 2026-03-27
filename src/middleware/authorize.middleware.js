@@ -1,4 +1,4 @@
-import { ForbiddenError } from "../error/AppError";
+import { ForbiddenError } from "../error/AppError.js";
 
 export const authorize = (...roles) => {
     return (req, res, next) => {
