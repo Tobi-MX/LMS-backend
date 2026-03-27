@@ -2,6 +2,7 @@ import express from "express"
 
 import { signup, verifyEmail, login, logout, forgotPassword, resetPassword, resetVerificationToken, changePassword } from "../controllers/auth.controller.js"
 import { authenticate } from "../middleware/authenticate.middleware.js"
+import { isVerifiedAndApproved } from "../middleware/verifiedAndApproved.js"
 
 const router = express.Router()
 
@@ -19,6 +20,7 @@ router.post("/forgot-password", forgotPassword)
 router.post("/reset-password/:token", resetPassword)
 router.patch("/change-password",
     authenticate, 
+    isVerifiedAndApproved,
     changePassword
 )
 

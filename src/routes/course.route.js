@@ -7,12 +7,14 @@ import { getCourseProgress } from "../controllers/lesson.controller.js"
 import { authenticate } from "../middleware/authenticate.middleware.js"
 import { authorize } from "../middleware/authorize.middleware.js"
 import { upload } from "../lib/multer.js"
+import { isVerifiedAndApproved } from "../middleware/verifiedAndApproved.js"
 
 const router = express.Router()
 
 // LESSON CONTROLLERS
 router.get("/:id/progress",
     authenticate,
+    isVerifiedAndApproved,
     getCourseProgress
 )
 
@@ -21,11 +23,13 @@ router.get("/:id/progress",
 // ENROLLMENT CONTROLLERS
 router.post("/:id/enroll",
     authenticate,
+    isVerifiedAndApproved,
     enrollInCourse
 )
 
 router.get("/:id/students",
     authenticate,
+    isVerifiedAndApproved,
     authorize("instructor", "admin"),
     getCourseStudents
 )
@@ -35,6 +39,7 @@ router.get("/:id/students",
 // MODULE CONTROLLERS
 router.post("/:id/modules",
     authenticate,
+    isVerifiedAndApproved,
     authorize("instructor", "admin"),
     createModule
 )
@@ -42,18 +47,28 @@ router.get("/:id/modules", getCourseModules)
 
 
 // =================================================================
-router.get("/me", authenticate, authorize("instructor"), getMyCourses)
-//gets logged in instructors courses (Like for instructor dashboard)
+router.get("/me", 
+    authenticate,
+    isVerifiedAndApproved, 
+    authorize("instructor"), 
+    getMyCourses
+) //gets logged in instructors courses (Like for instructor dashboard)
 
 /* ---------- PUBLIC ROUTES ---------- */
 
-router.get("/", getCourses) // will add pagination to this route.
-router.get("/:id", getCourse)
-router.get("/instructors/:id", getInstructorCourses) // gets an instructor courses based on id provided
+router.get("/", 
+    getCourses
+) // will add pagination to this route.
+router.get("/:id", 
+    getCourse
+)
+router.get("/instructors/:id", 
+    getInstructorCourses
+) // gets an instructor courses based on id provided
 
 /* ---------- AUTH REQUIRED ---------- */
 
-router.use(authenticate, authorize("instructor", "admin"));
+router.use(authenticate, isVerifiedAndApproved, authorize("instructor", "admin"));
 
 router.post("/",
     upload.single("thumbnail"),

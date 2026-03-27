@@ -1,9 +1,9 @@
-import { ForbiddenError } from "../error/AppError";  
+import { ForbiddenError } from "../error/AppError";
 
 export const isVerifiedAndApproved = (req, res, next) => {
-  if (!req.user?.isApproved || !req.user?.isVerified) {
-    return next(new ForbiddenError("Not Authorized!"));
-  }
+    if (!req.user?.isApproved || !req.user?.isVerified) {
+        return next(new ForbiddenError("Not Authorized!"));
+    }
 
-  next();
+    next();
 };

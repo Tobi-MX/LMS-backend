@@ -7,6 +7,7 @@ import { authenticate } from "../middleware/authenticate.middleware.js"
 import { authorize } from '../middleware/authorize.middleware.js'
 import { upload } from "../lib/multer.js"
 import { requireModuleAccess } from '../middleware/requireModuleAccess.middleware.js'
+import { isVerifiedAndApproved } from '../middleware/verifiedAndApproved.js'
 
 const router = express.Router()
 
@@ -14,12 +15,14 @@ const router = express.Router()
 // LESSON CONTROLLER
 router.post("/:id/lessons",
     authenticate,
+    isVerifiedAndApproved,
     authorize("instructor", "admin"),
     upload.single("file"), 
     createLesson
 )
 router.get("/:id/lessons",
     authenticate,
+    isVerifiedAndApproved,
     requireModuleAccess,
     getModuleLessons,
 )
@@ -29,7 +32,7 @@ router.get("/:id", getModule)
 
 
 /* ---------- AUTH REQUIRED ---------- */
-router.use(authenticate, authorize("instructor", "admin"))
+router.use(authenticate, isVerifiedAndApproved, authorize("instructor", "admin"))
 
 router.patch("/:id", updateModule)
 router.delete("/:id", deleteModule)

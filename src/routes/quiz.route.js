@@ -3,23 +3,27 @@ import { authenticate } from "../middleware/authenticate.middleware.js"
 import { getQuiz, startQuiz, submitQuiz } from "../controllers/quiz.controller.js"
 import { requireQuizAccess } from "../middleware/requireQuizAccess.middleware.js"
 import { requireAttemptAccess } from "../middleware/requireAttemptAccess.middleware.js"
+import { isVerifiedAndApproved } from "../middleware/verifiedAndApproved.js"
 
 const router = express.Router()
 
 router.get("/:id/quiz",
     authenticate,
+    isVerifiedAndApproved,
     requireQuizAccess,
     getQuiz
 )
 
 router.post("/:id/start",
     authenticate,
+    isVerifiedAndApproved,
     requireQuizAccess,
     startQuiz
 )
 
 router.post("/attempts/:attemptId/submit",
     authenticate,
+    isVerifiedAndApproved,
     requireAttemptAccess,
     submitQuiz
 )
