@@ -1,3 +1,4 @@
+import { User } from "../models/User.model.js"
 import { Course } from "../models/Course.model.js"
 import { Module } from "../models/Module.model.js";
 import { Lesson } from "../models/Lesson.model.js"
@@ -92,7 +93,7 @@ export const deleteCourseService = async (courseId, user) => {
     const moduleIds = modules.map(m => m._id)
 
     await Module.deleteMany({ course: courseId })
-    await Lesson.deleteMany({ module: { $in: moduleIds }})
+    await Lesson.deleteMany({ module: { $in: moduleIds } })
     await Enrollment.deleteMany({ course: courseId }) //will add all that needs to later
 
     await course.deleteOne();
@@ -148,13 +149,17 @@ export const getMyCoursesService = async (instructorId) => {
 
 export const getInstructorCoursesService = async (instructorId) => {
     if (!mongoose.Types.ObjectId.isValid(instructorId)) {
-        throw new BadRequestError("Invalid course id");
+        throw new BadRequestError("Invalid course id")
+    }
+    const checkInstructorId = await User.findById(instructorId)
+    if (!checkInstructorId) {
+        throw new NotFoundError("Instructor not found")
     }
     const courses = await Course.find({
         instructor: instructorId
     })
         .populate("instructor", "name")
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: -1 })
 
     return courses;
 }

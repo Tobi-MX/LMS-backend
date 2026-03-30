@@ -52,7 +52,7 @@ export const getUserProfileService = async (userId) => {
         name: user.name,
         bio: user.bio,
         profilePic: user.profilePic,
-        id: req.user._id
+        id: user._id
     }
 }
 

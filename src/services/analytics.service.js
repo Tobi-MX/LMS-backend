@@ -77,7 +77,11 @@ export const getInstructorQuizAnalyticsService = async (quizId, instructorId) =>
         }
     ])
 
-    const data = stats[0]
+    const data = stats[0] || {
+        avgScore: 0,
+        totalAttempts: 0,
+        passed: 0
+    }
 
     const passRate = data.totalAttempts
         ? (data.passed / data.totalAttempts) * 100

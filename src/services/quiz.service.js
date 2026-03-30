@@ -1,3 +1,4 @@
+import mongoose from "mongoose"
 import { QuizAttempt } from "../models/QuizAttempt.model.js";
 import { Quiz } from "../models/Quiz.model.js";
 import { Lesson } from "../models/Lesson.model.js";
@@ -142,4 +143,34 @@ export const submitQuizService = async (attemptId, answers) => {
     await attempt.save()
 
     return attempt
+}
+
+export const getQuizzesService = async (courseId, user) => {
+    if (!mongoose.Types.ObjectId.isValid(courseId)) {
+        throw new BadRequestError("Invalid course id")
+    }
+
+    const course = await Course.findById(courseId)
+    if (!course) {
+        throw new NotFoundError("Course not found")
+    }
+    console.log(course.instructor.toString(), user.id.toString())
+    if (
+        course.instructor.toString() !== user.id.toString() &&
+        user.role !== "admin"
+    ) {
+        throw new ForbiddenError("Not authorized!")
+    }
+
+    const modules = await Module.find({
+        course: course._id
+    }).select("_id")
+    const lessons = await Lesson.find({
+        module: { $in: modules.map(m => m._id) }
+    }).select("_id")
+    const quizzes = await Quiz.find({
+        lesson: { $in: lessons.map(l => l._id) }
+    })
+
+    return quizzes
 }

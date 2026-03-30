@@ -67,7 +67,7 @@ export const createLessonService = async (moduleId, data, file, user) => {
 
 export const getModuleLessonsService = async (moduleId) => {
     if (!mongoose.Types.ObjectId.isValid(moduleId)) {
-        throw new BadRequestError("Invalid course id");
+        throw new BadRequestError("Invalid module id");
     }
     const module = await Module.findById(moduleId)
 
