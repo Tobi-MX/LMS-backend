@@ -18,7 +18,7 @@ export const uploadLesson = async (file, type) => {
     if (type === "video") {
         resourceType = "video";
     } else if (type === "pdf") {
-        resourceType = "raw";
+        resourceType = "image";
     }
 
     const uploadResponse = await cloudinary.uploader.upload(file.path, {
