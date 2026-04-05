@@ -132,10 +132,10 @@ Format:
     let parsed
 
     try {
-        const jsonString = await extractJSON(text)
-        parsed = await JSON.parse(jsonString)
+        const jsonString = extractJSON(text)
+        parsed = JSON.parse(jsonString)
     } catch (err) {
-        throw new Error("Failed to parse AI response")
+        throw new Error(`Failed to parse AI response: ${err.message}`)
     }
 
     return parsed
