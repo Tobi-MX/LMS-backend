@@ -154,9 +154,9 @@ export const getQuizzesService = async (courseId, user) => {
     if (!course) {
         throw new NotFoundError("Course not found")
     }
-    console.log(course.instructor.toString(), user.id.toString())
+    console.log(course.instructor.toString(), user._id.toString())
     if (
-        course.instructor.toString() !== user.id.toString() &&
+        course.instructor.toString() !== user._id.toString() &&
         user.role !== "admin"
     ) {
         throw new ForbiddenError("Not authorized!")
