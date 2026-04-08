@@ -5,6 +5,7 @@ import { Course } from "../models/Course.model.js"
 import { BadRequestError, ForbiddenError, NotFoundError } from "../error/AppError.js"
 import { uploadLesson, deleteLesson } from "../utils/cloudinary.js"
 import { Enrollment } from "../models/Enrollment.model.js"
+import { Quiz } from "../models/Quiz.model.js"
 
 export const createLessonService = async (moduleId, data, file, user) => {
     if (!mongoose.Types.ObjectId.isValid(moduleId)) {
@@ -91,7 +92,17 @@ export const getLessonService = async (lessonId) => {
     if (!lesson) {
         throw new NotFoundError("lesson not found")
     }
-    return lesson
+    let quizId;
+
+    if (lesson.type === 'quiz') {
+        const quiz = await Quiz.findOne({lesson: lessonId})
+        quizId = quiz._id
+    }
+    
+    return {
+        ...lesson.toObject(),
+        quizId
+    }
 }
 
 export const updateLessonService = async (lessonId, data, file, user) => {
