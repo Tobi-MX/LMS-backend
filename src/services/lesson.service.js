@@ -80,7 +80,34 @@ export const getModuleLessonsService = async (moduleId) => {
         module: moduleId
     }).sort({ order: 1 })
 
-    return lessons
+    // Get all quiz-type lesson IDs
+    const quizLessonIds = lessons
+        .filter(lesson => lesson.type === 'quiz')
+        .map(lesson => lesson._id);
+
+    // Fetch all quizzes for those lessons
+    const quizzes = await Quiz.find({
+        lesson: { $in: quizLessonIds }
+    })
+
+    // Create a map: lessonId -> quizId
+    const quizMap = {};
+    quizzes.forEach(q => {
+        quizMap[q.lesson.toString()] = q._id
+    })
+
+    // Attach quizId to each lesson
+    const result = lessons.map(lesson => {
+        const lessonObj = lesson.toObject()
+
+        if (lesson.type === 'quiz') {
+            lessonObj.quizId = quizMap[lesson._id.toString()] || null
+        }
+
+        return lessonObj
+    })
+
+    return result
 }
 
 export const getLessonService = async (lessonId) => {
@@ -95,10 +122,10 @@ export const getLessonService = async (lessonId) => {
     let quizId;
 
     if (lesson.type === 'quiz') {
-        const quiz = await Quiz.findOne({lesson: lessonId})
+        const quiz = await Quiz.findOne({ lesson: lessonId })
         quizId = quiz._id
     }
-    
+
     return {
         ...lesson.toObject(),
         quizId
